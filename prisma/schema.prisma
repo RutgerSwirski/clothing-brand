@@ -20,6 +20,8 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   images      Image[]
+  available   Boolean  @default(true)
+  tags        Tag[]    @relation("ProductTags")
 }
 
 model Image {
@@ -29,4 +31,12 @@ model Image {
   product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Tag {
+  id        Int       @id @default(autoincrement())
+  name      String
+  products  Product[] @relation("ProductTags")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
