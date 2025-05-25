@@ -6,7 +6,7 @@ const ProductsPage = async () => {
     orderBy: { createdAt: "desc" },
   });
 
-  console.log("Products:", products);
+  console.log("Products:", products); 
 
   return (
     <div>
