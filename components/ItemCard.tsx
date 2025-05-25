@@ -9,7 +9,7 @@ type ItemCardProps = {
 
 const ItemCard = ({ name, description, images, slug }: ItemCardProps) => {
   return (
-    <div className="flex flex-col md:flex-row w-full md:w-1/2 border border-black/10 rounded-lg overflow-hidden shadow-sm font-body transition-all bg-white  ">
+    <div className="flex flex-col md:flex-row w-full border border-black/10 rounded-lg overflow-hidden shadow-sm font-body transition-all bg-white  ">
       {/* Image/Carousel Placeholder */}
       <div className="w-full md:w-1/2 h-80 bg-neutral-100  flex items-center justify-center text-sm text-neutral-500 tracking-wider font-mono">
         carousel coming soon

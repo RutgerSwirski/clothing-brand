@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import { Inter, Space_Grotesk } from "next/font/google";
+import Link from "next/link";
 
 const inter = Inter({
   variable: "--font-body",
@@ -39,7 +41,26 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${inter.variable} ${spaceGrotesk.variable} `}
       >
-        {children}
+        <ReactQueryProvider>
+          <nav className="fixed top-0 left-0 w-full z-30 px-8 md:px-16 py-4 bg-black bg-opacity-30 backdrop-blur-md text-white font-body">
+            <div className="flex items-center justify-between">
+              <Link href="/" className="flex items-center space-x-2">
+                <button className="text-2xl font-heading font-bold tracking-wide">
+                  NOVAIR
+                </button>
+              </Link>
+
+              <ul className="flex space-x-8 text-sm md:text-base font-medium tracking-wider">
+                <Link href="/products">
+                  <li className="hover:text-gray-300 transition-colors duration-200">
+                    Explore Collection
+                  </li>
+                </Link>
+              </ul>
+            </div>
+          </nav>
+          <main className="">{children}</main>
+        </ReactQueryProvider>
       </body>
     </html>
   );
