@@ -9,8 +9,8 @@ async function main() {
       {
         name: "Item 1",
         slug: "item-1",
+        price: 100,
         description: "This is a description of item 1.",
-        image: "https://via.placeholder.com/150",
       },
     ],
   });

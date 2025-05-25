@@ -1,5 +1,6 @@
 import ItemCard from "@/components/ItemCard";
 import HeroImage from "../public/images/hero.png";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -12,9 +13,11 @@ export default function Home() {
           </div>
 
           <ul className="flex space-x-8 text-sm md:text-base font-medium tracking-wider">
-            <li className="hover:text-gray-300 transition-colors duration-200 cursor-pointer">
-              Explore Collection
-            </li>
+            <Link href="/products">
+              <li className="hover:text-gray-300 transition-colors duration-200 cursor-pointer">
+                Explore Collection
+              </li>
+            </Link>
           </ul>
         </div>
       </nav>
