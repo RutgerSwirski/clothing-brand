@@ -10,9 +10,13 @@
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.511.0",
     "next": "15.2.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.3.0"
   },
   "prisma": {
     "seed": "ts-node ./prisma/seed.ts"
@@ -28,6 +32,7 @@
     "prisma": "^6.8.2",
     "tailwindcss": "^4",
     "tsx": "^4.19.4",
+    "tw-animate-css": "^1.3.0",
     "typescript": "^5"
   }
 }
