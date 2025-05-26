@@ -58,12 +58,14 @@ export default function Home() {
             <ItemCard
               name="Item 1"
               description="This is a description of item 1."
+              slug="item-1"
             />
 
             {/* Image */}
             <ItemCard
               name="Item 2"
               description="This is a description of item 2."
+              slug="item-2"
             />
           </div>
 
@@ -73,12 +75,14 @@ export default function Home() {
             <ItemCard
               name="Item 3"
               description="This is a description of item 3."
+              slug="item-3"
             />
 
             {/* Image */}
             <ItemCard
               name="Item 4"
               description="This is a description of item 4."
+              slug="item-4"
             />
           </div>
         </div>
@@ -97,11 +101,13 @@ export default function Home() {
           <ItemCard
             name="Item 5"
             description="This is a description of item 5."
+            slug="item-5"
           />
 
           <ItemCard
             name="Item 6"
             description="This is a description of item 6."
+            slug="item-6"
           />
         </div>
       </section>
