@@ -43,6 +43,8 @@ const ProductsPage = () => {
     initialData: [],
   });
 
+  const areFiltersApplied = category || availability || sortBy || search;
+
   return (
     <div className="md:px-24 px-4 py-12">
       <h1 className="text-4xl md:text-6xl font-bold tracking-wide text-center my-16 font-heading">
@@ -58,7 +60,20 @@ const ProductsPage = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="w-full flex flex-wrap gap-4 justify-start md:justify-end">
+        <div className="w-full flex flex-wrap gap-4 justify-start md:justify-end items-center">
+          {areFiltersApplied && (
+            <button
+              className="underline text-blue-500 hover:text-blue-700 cursor-hover"
+              onClick={() => {
+                setCategory("");
+                setAvailability("");
+                setSortBy("");
+                setSearch("");
+              }}
+            >
+              Clear All
+            </button>
+          )}
           <div className="w-full sm:w-auto">
             <Select
               value={category || "all"}
@@ -126,8 +141,6 @@ const ProductsPage = () => {
               </SelectContent>
             </Select>
           </div>
-
-          <button>Clear All</button>
         </div>
       </div>
 
