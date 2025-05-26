@@ -21,10 +21,10 @@ import axios from "axios";
 import { useAtom } from "jotai";
 
 const ProductsPage = () => {
-  const [category] = useAtom(categoryAtom);
-  const [availability] = useAtom(availabilityAtom);
-  const [sortBy] = useAtom(sortByAtom);
-  const [search] = useAtom(searchAtom);
+  const [category, setCategory] = useAtom(categoryAtom);
+  const [availability, setAvailability] = useAtom(availabilityAtom);
+  const [sortBy, setSortBy] = useAtom(sortByAtom);
+  const [search, setSearch] = useAtom(searchAtom);
 
   const { data: products } = useQuery({
     queryKey: ["products", { category, availability, sortBy, search }],
@@ -54,16 +54,24 @@ const ProductsPage = () => {
           type="text"
           placeholder="Search products..."
           className="w-full md:w-1/2"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
 
         <div className="w-full flex flex-wrap gap-4 justify-start md:justify-end">
           <div className="w-full sm:w-auto">
-            <Select>
+            <Select
+              value={category || "all"}
+              onValueChange={(value) => {
+                setCategory(value === "all" ? "" : value);
+              }}
+            >
               <SelectTrigger className="w-full min-w-[150px]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
+                  <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="tops">Tops</SelectItem>
                   <SelectItem value="bottoms">Bottoms</SelectItem>
                   <SelectItem value="accessories">Accessories</SelectItem>
@@ -74,12 +82,18 @@ const ProductsPage = () => {
           </div>
 
           <div className="w-full sm:w-auto">
-            <Select>
+            <Select
+              value={availability || "all"}
+              onValueChange={(value) => {
+                setAvailability(value === "all" ? "" : value);
+              }}
+            >
               <SelectTrigger className="w-full min-w-[150px]">
                 <SelectValue placeholder="Availability" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
+                  <SelectItem value="all">All Availability</SelectItem>
                   <SelectItem value="in-stock">In Stock</SelectItem>
                   <SelectItem value="out-of-stock">Out of Stock</SelectItem>
                   <SelectItem value="pre-order">Pre-order</SelectItem>
@@ -89,7 +103,12 @@ const ProductsPage = () => {
           </div>
 
           <div className="w-full sm:w-auto">
-            <Select>
+            <Select
+              value={sortBy || "newest"}
+              onValueChange={(value) => {
+                setSortBy(value === "newest" ? "" : value);
+              }}
+            >
               <SelectTrigger className="w-full min-w-[150px]">
                 <SelectValue placeholder="Sort By" />
               </SelectTrigger>

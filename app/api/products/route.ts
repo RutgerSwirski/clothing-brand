@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   const search = searchParams.get("search") || "";
 
   const where = {
-    ...(category && category !== "all" ? { category } : {}),    
+    ...(category && category !== "all" ? { category } : {}),
     ...(availability === "in-stock"
       ? { available: true }
       : availability === "out-of-stock"
@@ -19,8 +19,8 @@ export async function GET(req: Request) {
     ...(search
       ? {
           name: {
-            contains: search,
-            mode: "insensitive",
+            contains: search.toLowerCase(),
+            // mode: "insensitive", // Case-insensitive search
           },
         }
       : {}),

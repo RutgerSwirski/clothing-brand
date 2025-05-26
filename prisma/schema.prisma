@@ -21,7 +21,7 @@ model Product {
   images      Image[]
   available   Boolean  @default(true)
   tags        Tag[]    @relation("ProductTags")
-  slug        String   @unique
+  slug        String   @unique  
 }
 
 model Image {
