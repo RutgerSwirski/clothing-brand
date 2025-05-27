@@ -10,6 +10,41 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
+import { loadStripe } from "@stripe/stripe-js"; // stripe.js
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
+);
+
+const handleBuyNow = async (product) => {
+  const stripe = await stripePromise;
+
+  if (!stripe) {
+    console.error("Stripe not loaded");
+    return;
+  }
+
+  try {
+    const response = await axios.post("/api/checkout", {
+      items: [
+        {
+          name: product.name,
+          price: product.price * 100, // Convert to cents
+          image: product.image,
+          quantity: 1,
+        },
+      ],
+    });
+
+    const data = await response.data;
+    stripe.redirectToCheckout({
+      sessionId: data.id,
+    });
+  } catch (error) {
+    console.error("Stripe Checkout Error:", error);
+    alert("Failed to redirect to checkout. Please try again later.");
+  }
+};
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -75,7 +110,10 @@ const ProductPage = () => {
           <button className="bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition">
             Add to Cart
           </button>
-          <button className="border border-black px-6 py-3 rounded hover:bg-black hover:text-white transition">
+          <button
+            onClick={() => handleBuyNow(product)}
+            className="border border-black px-6 py-3 rounded hover:bg-black hover:text-white transition"
+          >
             Buy Now
           </button>
         </div>
