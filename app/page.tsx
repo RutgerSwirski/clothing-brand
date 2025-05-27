@@ -1,6 +1,7 @@
 import ItemCard from "@/components/ItemCard";
 import HeroImage from "../public/images/hero.png";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -16,34 +17,59 @@ export default function Home() {
         />
 
         {/* Overlay (darkens image slightly) */}
-        <div className="absolute inset-0  z-10 bg-black opacity-50" />
+        <div className="absolute inset-0 z-10 bg-black/50" />
 
         {/* Hero Content */}
-        <div className="absolute top-1/2 left-8 md:left-36 transform -translate-y-1/2 z-20">
-          <p className="text-white font-heading tracking-widest mb-6 font-bold text-4xl ">
+        <div className="absolute top-1/2 left-6 md:left-24 transform -translate-y-1/2 z-20 text-white max-w-xl">
+          <h1 className="text-4xl md:text-6xl font-heading font-bold tracking-widest mb-6">
             NOVAIR
+          </h1>
+          <p className="text-lg md:text-2xl font-body font-light tracking-wider mb-8">
+            Life’s too short to wear boring clothes.
           </p>
-          <p className="text-base md:text-2xl font-body font-light tracking-widest mb-6">
-            Life is too short to wear boring clothes.
-          </p>
-          <button className="px-6 py-3 border rounded-md cursor-pointer border-white text-white tracking-wider text-sm font-body hover:bg-white hover:text-black transition duration-300">
-            Explore Collection
-          </button>
+          <Link href="/products" passHref>
+            <Button className="bg-white text-black hover:bg-gray-200 transition-colors duration-300">
+              View Products
+            </Button>
+          </Link>
         </div>
       </section>
 
       {/* Second Section */}
       <section className="py-32 px-8 md:px-24 text-black bg-stone-100">
-        <h2 className="tracking-wide text-3xl md:text-5xl font-heading font-bold text-center mb-8">
-          about NOVAIR
-        </h2>
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-12">
+          {/* Text Section */}
+          <div className="w-full md:w-1/2">
+            <h2 className="tracking-wide text-3xl md:text-5xl font-heading font-bold mb-8 text-left md:text-center">
+              about NOVAIR
+            </h2>
+            <p className="text-lg md:text-xl font-body leading-relaxed md:leading-loose max-w-prose mx-auto md:mx-0">
+              NOVAIR started in a small room, with a secondhand sewing machine
+              and a lot of trial and error. I'm not classically trained — just
+              self-taught and deeply drawn to the idea that clothing can be both
+              function and feeling. Every piece I make carries a bit of where
+              I'm at — imperfect, expressive, intentional. This is a one-person
+              studio. Every stitch, every seam, every idea — built by hand, from
+              scratch.
+            </p>
+          </div>
 
-        <p className="text-lg md:text-xl text-center mb-8 w-3/4 mx-auto">
-          I'm just a guy designing and sewing clothes from my little office.
-          NOVAIR is my way of expressing my love for fashion and art. I'm
-          figuring things out as I go along - teaching myself, failing, learning
-          and creating clothes that are infused with my own unique style.
-        </p>
+          {/* Image Section */}
+          <div className="w-full md:w-1/2 grid grid-cols-2 gap-4">
+            <div className="aspect-square bg-neutral-200 rounded-lg shadow-sm flex items-center justify-center text-sm text-neutral-500 font-mono">
+              sewing machine
+            </div>
+            <div className="aspect-square bg-neutral-200 rounded-lg shadow-sm flex items-center justify-center text-sm text-neutral-500 font-mono">
+              fabrics
+            </div>
+            <div className="aspect-square bg-neutral-200 rounded-lg shadow-sm flex items-center justify-center text-sm text-neutral-500 font-mono">
+              work in progress
+            </div>
+            <div className="aspect-square bg-neutral-200 rounded-lg shadow-sm flex items-center justify-center text-sm text-neutral-500 font-mono">
+              sketchbook
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="py-32 px-4 md:px-24 bg-stone-200 text-black">
@@ -102,12 +128,14 @@ export default function Home() {
             name="Item 5"
             description="This is a description of item 5."
             slug="item-5"
+            comingSoon
           />
 
           <ItemCard
             name="Item 6"
             description="This is a description of item 6."
             slug="item-6"
+            comingSoon
           />
         </div>
       </section>

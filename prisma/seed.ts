@@ -11,18 +11,21 @@ async function main() {
         slug: "item-1",
         price: 100,
         description: "This is a description of item 1.",
+        available: true,
       },
       {
         name: "Item 2",
         slug: "item-2",
         price: 200,
         description: "This is a description of item 2.",
+        available: false,
       },
       {
         name: "Item 3",
         slug: "item-3",
         price: 300,
         description: "This is a description of item 3.",
+        comingSoon: true,
       },
     ],
   });

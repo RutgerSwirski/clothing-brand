@@ -1,13 +1,32 @@
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 type ItemCardProps = {
   name: string;
   description: string;
   images?: string[];
   slug?: string;
+  available?: boolean;
+  comingSoon?: boolean;
 };
 
-const ItemCard = ({ name, description, images, slug }: ItemCardProps) => {
+const ItemCard = ({
+  name,
+  description,
+  images,
+  slug,
+  available,
+  comingSoon = false,
+}: ItemCardProps) => {
+  console.log("ItemCard Props:", {
+    name,
+    description,
+    images,
+    slug,
+    available,
+    comingSoon,
+  });
+
   return (
     <div className="flex flex-col md:flex-row w-full border border-black/10 rounded-lg overflow-hidden shadow-sm font-body transition-all bg-white  ">
       {/* Image/Carousel Placeholder */}
@@ -27,11 +46,24 @@ const ItemCard = ({ name, description, images, slug }: ItemCardProps) => {
           </p>
         </div>
 
-        <Link href={`/products/${slug}`}>
-          <button className="mt-4 py-2 px-4 bg-black text-white rounded-md hover:bg-gray-800 transition duration-300 ease-in-out hover:cursor-pointer">
-            view details
-          </button>
-        </Link>
+        <div className="flex items-center gap-8">
+          {/* if is coming soon then its not available yet, if coming sson show coming soon, if available then allow buy if not the sold out */}
+          {comingSoon ? (
+            <span className="text-sm text-yellow-600 font-semibold">
+              Coming Soon
+            </span>
+          ) : available ? (
+            <Button>Buy Now</Button>
+          ) : (
+            <span className="text-sm text-red-600 font-semibold">Sold Out</span>
+          )}
+
+          {/* View Button */}
+
+          <Link href={`/products/${slug}`}>
+            <Button variant="secondary">View</Button>
+          </Link>
+        </div>
       </div>
     </div>
   );

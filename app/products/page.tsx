@@ -20,7 +20,12 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useAtom } from "jotai";
 
-const ProductsPage = () => {
+// export const metadata = {
+//   title: "Products",
+//   description: "Browse our collection of products",
+// };
+
+export default function ProductsPage() {
   const [category, setCategory] = useAtom(categoryAtom);
   const [availability, setAvailability] = useAtom(availabilityAtom);
   const [sortBy, setSortBy] = useAtom(sortByAtom);
@@ -146,17 +151,9 @@ const ProductsPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2   gap-8 my-16">
         {products.map((product) => (
-          <ItemCard
-            key={product.id}
-            name={product.name}
-            description={product.description}
-            price={product.price}
-            slug={product.slug}
-          />
+          <ItemCard key={product.id} {...product} />
         ))}
       </div>
     </div>
   );
-};
-
-export default ProductsPage;
+}
