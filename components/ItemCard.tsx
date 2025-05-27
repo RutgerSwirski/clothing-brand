@@ -24,46 +24,46 @@ const ItemCard = ({
   return (
     <div
       className={clsx(
-        "flex flex-col md:flex-row w-full border border-black/10 rounded-lg overflow-hidden shadow-sm font-body transition-all bg-white",
+        "flex flex-col md:flex-row w-full border border-black/10 rounded-lg overflow-hidden shadow-sm font-body bg-white transition-all",
         {
           "md:hover:scale-[1.01] md:hover:shadow-lg": !featured,
           "md:hover:scale-[1.02] md:hover:shadow-xl": featured,
         }
       )}
     >
-      {/* Image/Carousel Placeholder */}
-      <div className="w-full md:w-1/2 h-80 bg-neutral-100  flex items-center justify-center text-sm text-neutral-500 tracking-wider font-mono">
+      {/* Image Placeholder / Carousel */}
+      <div className="w-full md:w-1/2 aspect-[4/5] bg-neutral-100 flex items-center justify-center text-sm text-neutral-500 tracking-wider font-mono border-b md:border-b-0 md:border-r border-black/10">
         carousel coming soon
       </div>
 
       {/* Content */}
-      <div className="w-full md:w-1/2 p-6 flex flex-col justify-between">
+      <div className="w-full md:w-1/2 p-6 flex flex-col justify-between gap-6">
+        {/* Title + Description */}
         <div>
-          <h2 className="text-2xl md:text-3xl font-heading tracking-wide mb-4 text-black ">
+          <h2 className="text-2xl md:text-3xl font-heading tracking-wide mb-3 text-black">
             {name}
           </h2>
-
-          <p className="text-sm md:text-base text-neutral-700  leading-relaxed">
+          <p className="text-sm md:text-base text-neutral-700 leading-relaxed">
             {description}
           </p>
         </div>
 
-        <div className="flex items-center gap-8">
-          {/* if is coming soon then its not available yet, if coming sson show coming soon, if available then allow buy if not the sold out */}
+        {/* CTA Section */}
+        <div className="flex flex-wrap items-center gap-4">
           {comingSoon ? (
             <span className="text-sm text-yellow-600 font-semibold">
               Coming Soon
             </span>
           ) : available ? (
-            <Button>Buy Now</Button>
+            <Button className="w-fit">Buy Now</Button>
           ) : (
             <span className="text-sm text-red-600 font-semibold">Sold Out</span>
           )}
 
-          {/* View Button */}
-
-          <Link href={`/products/${slug}`}>
-            <Button variant="secondary">View</Button>
+          <Link href={`/products/${slug}`} passHref>
+            <Button variant="secondary" className="w-fit">
+              View
+            </Button>
           </Link>
         </div>
       </div>
