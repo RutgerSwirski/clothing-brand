@@ -33,6 +33,10 @@ export default function Home() {
             </Button>
           </Link>
         </div>
+
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 animate-bounce text-white text-sm tracking-wider font-mono">
+          scroll
+        </div>
       </section>
 
       {/* Second Section */}
@@ -43,6 +47,7 @@ export default function Home() {
             <h2 className="tracking-wide text-3xl md:text-5xl font-heading font-bold mb-8 text-left md:text-center">
               about NOVAIR
             </h2>
+            <hr className="border-t border-stone-300 w-12 mx-auto mb-8" />
             <p className="text-lg md:text-xl font-body leading-relaxed md:leading-loose max-w-prose mx-auto md:mx-0">
               NOVAIR started in a small room, with a secondhand sewing machine
               and a lot of trial and error. I'm not classically trained — just
@@ -85,6 +90,7 @@ export default function Home() {
               name="Item 1"
               description="This is a description of item 1."
               slug="item-1"
+              featured
             />
 
             {/* Image */}
@@ -92,6 +98,7 @@ export default function Home() {
               name="Item 2"
               description="This is a description of item 2."
               slug="item-2"
+              featured
             />
           </div>
 
@@ -102,6 +109,7 @@ export default function Home() {
               name="Item 3"
               description="This is a description of item 3."
               slug="item-3"
+              featured
             />
 
             {/* Image */}
@@ -109,6 +117,7 @@ export default function Home() {
               name="Item 4"
               description="This is a description of item 4."
               slug="item-4"
+              featured
             />
           </div>
         </div>

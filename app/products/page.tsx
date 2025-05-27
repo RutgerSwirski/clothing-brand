@@ -52,8 +52,8 @@ export default function ProductsPage() {
 
   return (
     <div className="md:px-24 px-4 py-12">
-      <h1 className="text-4xl md:text-6xl font-bold tracking-wide text-center my-16 font-heading">
-        Products
+      <h1 className="font-heading text-4xl md:text-6xl mb-4 tracking-wider text-center my-16">
+        PRODUCTS
       </h1>
 
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">

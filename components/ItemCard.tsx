@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
+import clsx from "clsx";
 
 type ItemCardProps = {
   name: string;
@@ -8,6 +9,7 @@ type ItemCardProps = {
   slug?: string;
   available?: boolean;
   comingSoon?: boolean;
+  featured?: boolean;
 };
 
 const ItemCard = ({
@@ -17,18 +19,18 @@ const ItemCard = ({
   slug,
   available,
   comingSoon = false,
+  featured = false,
 }: ItemCardProps) => {
-  console.log("ItemCard Props:", {
-    name,
-    description,
-    images,
-    slug,
-    available,
-    comingSoon,
-  });
-
   return (
-    <div className="flex flex-col md:flex-row w-full border border-black/10 rounded-lg overflow-hidden shadow-sm font-body transition-all bg-white  ">
+    <div
+      className={clsx(
+        "flex flex-col md:flex-row w-full border border-black/10 rounded-lg overflow-hidden shadow-sm font-body transition-all bg-white",
+        {
+          "md:hover:scale-[1.01] md:hover:shadow-lg": !featured,
+          "md:hover:scale-[1.02] md:hover:shadow-xl": featured,
+        }
+      )}
+    >
       {/* Image/Carousel Placeholder */}
       <div className="w-full md:w-1/2 h-80 bg-neutral-100  flex items-center justify-center text-sm text-neutral-500 tracking-wider font-mono">
         carousel coming soon
