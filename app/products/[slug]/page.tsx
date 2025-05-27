@@ -1,61 +1,115 @@
 "use client";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"; // shadcn
+import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import Image from "next/image";
 
 const ProductPage = () => {
   const { slug } = useParams();
 
   const {
-    data: productData,
+    data: product,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["product", slug],
     queryFn: async () => {
-      const response = await axios.get(`/api/products/${slug}`);
-      return response.data;
+      const res = await axios.get(`/api/products/${slug}`);
+      return res.data;
     },
-    enabled: !!slug, // Only run the query if slug is defined
+    enabled: !!slug,
   });
 
-  console.log("Product Data:", productData);
-
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-neutral-500">
+        Loading product...
+      </div>
+    );
   }
 
   if (isError) {
-    return <div>Error loading product</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600">
+        Failed to load product.
+      </div>
+    );
   }
-
   return (
-    <div className="flex items-center min-h-screen">
-      <div className="border w-1/2 p-8 flex flex-col items-center">
-        <img
-          src={productData.image}
-          alt={productData.name}
-          className="w-full h-auto object-cover mb-8"
-          style={{ maxHeight: "400px", objectFit: "contain" }}
+    <section className="flex flex-col md:flex-row min-h-screen bg-white text-black mt-16">
+      {/* Left: Image or carousel */}
+      <div className="w-full md:w-1/2 p-6 md:sticky md:top-16 md:h-screen flex items-center justify-center border-r border-black/10">
+        <Image
+          src={product.image}
+          alt={product.name}
+          width={800}
+          height={1000}
+          className="w-full max-h-[80vh] object-contain rounded-lg shadow h-full border"
         />
       </div>
 
-      <div className="w-1/2 p-8 flex flex-col items-center">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-wide text-center my-16 font-heading">
-          {productData.name}
-        </h1>
-        <p className="text-lg md:text-xl mb-4">{productData.description}</p>
-        <p className="text-2xl font-bold mb-4">${productData.price}</p>
-        <div className="flex justify-center items-center gap-4">
-          <button className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+      {/* Right: Scrollable Details */}
+      <div className="w-full md:w-1/2 p-8 md:overflow-y-auto md:h-screen space-y-8 font-body">
+        {/* Title, Description, Price, Availability */}
+        <div>
+          <h1 className="text-3xl md:text-5xl font-heading font-bold mb-4">
+            {product.name}
+          </h1>
+          <p className="text-lg text-neutral-700 mb-2">{product.description}</p>
+          <p className="text-2xl font-bold mb-4">${product.price}</p>
+          {product.available ? (
+            <span className="text-sm text-green-600 font-medium">In Stock</span>
+          ) : (
+            <span className="text-sm text-red-500 font-medium">Sold Out</span>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-4 md:flex-row">
+          <button className="bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition">
             Add to Cart
           </button>
-
-          <span>{productData.available ? "In Stock" : "Out of Stock"}</span>
+          <button className="border border-black px-6 py-3 rounded hover:bg-black hover:text-white transition">
+            Buy Now
+          </button>
         </div>
+
+        {/* Extra Info */}
+        <Accordion
+          type="single"
+          collapsible
+          className="w-full divide-y divide-stone-200"
+        >
+          <AccordionItem value="materials">
+            <AccordionTrigger>Materials & Construction</AccordionTrigger>
+            <AccordionContent>
+              {product.materials ||
+                "Organic cotton. Hand-sewn in my home studio."}
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="sizing">
+            <AccordionTrigger>Sizing & Fit</AccordionTrigger>
+            <AccordionContent>
+              {product.sizing ||
+                "Boxy fit. Slightly cropped. See size guide for details."}
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="care">
+            <AccordionTrigger>Care Instructions</AccordionTrigger>
+            <AccordionContent>
+              {product.care ||
+                "Cold wash by hand. Hang dry. Iron on low if needed."}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
-    </div>
+    </section>
   );
 };
 
