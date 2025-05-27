@@ -37,6 +37,7 @@ const navbarLinks = [
   { label: "Upcycle", href: "/upcycle" },
   { label: "Mystery Box", href: "/mystery-box" },
   { label: "Fragments", href: "/fragments" },
+  { label: "Lookbook", href: "/lookbook" },
 ];
 
 export default function RootLayout({
