@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 const navbarLinks = [
   { label: "Products", href: "/products" },
   { label: "Upcycle", href: "/upcycle" },
-  { label: "Mystery Box", href: "/mystery-box" },
+  // { label: "Mystery Box", href: "/mystery-box" },
   { label: "Fragments", href: "/fragments" },
   { label: "Lookbook", href: "/lookbook" },
 ];
