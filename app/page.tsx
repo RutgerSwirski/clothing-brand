@@ -22,7 +22,7 @@ export default function Home() {
         {/* Hero Content */}
         <div className="absolute top-1/2 left-6 md:left-24 transform -translate-y-1/2 z-20 text-white max-w-xl">
           <h1 className="text-4xl md:text-6xl font-heading font-bold tracking-widest mb-6">
-            Studio Remade
+            Studio Remade.
           </h1>
           <p className="text-lg md:text-2xl font-body font-light tracking-wider mb-8">
             Nothing New. Everything Remade.
@@ -78,9 +78,18 @@ export default function Home() {
       </section>
 
       <section className="py-32 px-4 md:px-24 bg-stone-200 text-black">
-        <h2 className=" tracking-wide text-3xl md:text-5xl font-bold text-center mb-16 font-heading ">
-          some of my favorite pieces:
+        <h2 className="tracking-wide text-3xl md:text-5xl font-bold text-center mb-8 font-heading">
+          Featured Items
         </h2>
+
+        <hr className="border-t border-stone-300 w-12 mx-auto mb-8" />
+
+        <p className="text-lg md:text-xl text-center mb-12 w-3/4 mx-auto font-body">
+          Discover a selection of unique pieces that embody the spirit of Studio
+          Remade. Each item is crafted with care, using upcycled materials and
+          designed to tell a story. Click on any item to learn more about its
+          creation and inspiration.
+        </p>
 
         <div className="flex flex-col space-y-12">
           {/* Item 1 */}
@@ -125,11 +134,12 @@ export default function Home() {
 
       <section className="py-32 px-8 md:px-24 bg-stone-50 text-black">
         <h2 className="tracking-wide text-3xl md:text-5xl font-bold text-center mb-8 font-heading">
-          what I'm working on now:
+          Coming Soon
         </h2>
 
         <p className="text-lg md:text-xl text-center mb-8 w-3/4 mx-auto font-body">
-          I'm currently working on some new pieces and collections. Stay tuned!
+          Stay tuned for more exciting items that are on the way! These pieces
+          will be available soon, so keep an eye out for updates.
         </p>
 
         <div className="flex flex-col md:flex-row items-center md:justify-between gap-8">
@@ -152,7 +162,7 @@ export default function Home() {
       <footer className="py-12 text-center text-sm opacity-50">
         crafted with love
         <br />
-        &copy; {new Date().getFullYear()} NOVAIR
+        &copy; {new Date().getFullYear()} Studio Remade.
       </footer>
     </div>
   );

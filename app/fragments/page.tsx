@@ -37,8 +37,10 @@ export default function FragmentsPage() {
             Fragments
           </h1>
           <p className="text-lg md:text-xl max-w-2xl mx-auto text-neutral-700">
-            A peek into the scraps, drafts, and missteps that shaped NOVAIR. Not
-            for sale — just here to show the mess behind the process.
+            A peek into the scraps, drafts, and missteps that shaped my creative
+            process. These fragments are the raw material of my designs —
+            sketches, test pieces, and failed experiments. Not for sale — just
+            here to show the mess behind the process.
           </p>
         </div>
 

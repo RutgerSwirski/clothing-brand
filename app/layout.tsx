@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Geist_Mono, Geist } from "next/font/google";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-const inter = Inter({
+const inter = Geist({
   variable: "--font-body",
   subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
+const spaceGrotesk = Geist_Mono({
   variable: "--font-heading",
   subsets: ["latin"],
 });
@@ -59,7 +58,7 @@ export default function RootLayout({
                 variant="ghost"
                 className="text-2xl font-heading font-bold tracking-wide"
               >
-                <Link href="/">Studio Remade</Link>
+                <Link href="/">Studio Remade.</Link>
               </Button>
 
               {/* Nav Links */}
