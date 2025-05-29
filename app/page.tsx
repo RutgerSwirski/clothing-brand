@@ -22,10 +22,10 @@ export default function Home() {
         {/* Hero Content */}
         <div className="absolute top-1/2 left-6 md:left-24 transform -translate-y-1/2 z-20 text-white max-w-xl">
           <h1 className="text-4xl md:text-6xl font-heading font-bold tracking-widest mb-6">
-            NOVAIR
+            Studio Remade
           </h1>
           <p className="text-lg md:text-2xl font-body font-light tracking-wider mb-8">
-            Life’s too short to wear boring clothes.
+            Nothing New. Everything Remade.
           </p>
           <Link href="/products" passHref>
             <Button className="bg-white text-black hover:bg-gray-200 transition-colors duration-300">
@@ -45,17 +45,17 @@ export default function Home() {
           {/* Text Section */}
           <div className="w-full md:w-1/2">
             <h2 className="tracking-wide text-3xl md:text-5xl font-heading font-bold mb-8 text-left md:text-center">
-              about NOVAIR
+              About Studio Remade
             </h2>
             <hr className="border-t border-stone-300 w-12 mx-auto mb-8" />
             <p className="text-lg md:text-xl font-body leading-relaxed md:leading-loose max-w-prose mx-auto md:mx-0">
-              NOVAIR started in a small room, with a secondhand sewing machine
-              and a lot of trial and error. I'm not classically trained — just
-              self-taught and deeply drawn to the idea that clothing can be both
-              function and feeling. Every piece I make carries a bit of where
-              I'm at — imperfect, expressive, intentional. This is a one-person
-              studio. Every stitch, every seam, every idea — built by hand, from
-              scratch.
+              Studio Remade started in a small room, with a secondhand sewing
+              machine and a lot of trial and error. I'm not classically trained
+              — just self-taught and deeply drawn to the idea that clothing can
+              be both function and feeling. Every piece I make carries a bit of
+              where I'm at — imperfect, expressive, intentional. This is a
+              one-person studio. Every stitch, every seam, every idea — built by
+              hand, from scratch.
             </p>
           </div>
 

@@ -59,7 +59,7 @@ export default function RootLayout({
                 variant="ghost"
                 className="text-2xl font-heading font-bold tracking-wide"
               >
-                <Link href="/">NOVAIR</Link>
+                <Link href="/">Studio Remade</Link>
               </Button>
 
               {/* Nav Links */}
