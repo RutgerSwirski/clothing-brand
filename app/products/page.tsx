@@ -1,6 +1,7 @@
 "use client";
 
 import ItemCard from "@/components/ItemCard";
+import PageHeader from "@/components/PageHeader";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -52,19 +53,12 @@ export default function ProductsPage() {
 
   return (
     <div className="md:px-24 px-4 py-12">
-      <div className="mx-auto max-w-3xl px-6 md:px-12 py-24 font-body">
-        <h1 className="font-heading text-4xl md:text-6xl mb-4 tracking-wider text-center my-16">
-          PRODUCTS
-        </h1>
+      <PageHeader
+        title="Products"
+        subtitle={`Each piece holds a story — rebuilt, reimagined, and made to last.\nFilter the archive to find what fits your rhythm.`}
+      />
 
-        <p className="text-lg md:text-xl mb-12 opacity-80">
-          Each piece here was made by hand — sometimes experimental, sometimes
-          imperfect, always intentional. Use the filters to explore the
-          collection or find something that feels right.
-        </p>
-      </div>
-
-      <div className="bg-stone-100 text-black p-4 md:p-6 rounded-lg shadow-sm mb-12">
+      <div>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <Input
             type="text"

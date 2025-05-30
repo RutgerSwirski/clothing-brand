@@ -1,8 +1,7 @@
 import ItemCard from "@/components/ItemCard";
-import HeroImage from "../public/images/hero.png";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -47,8 +46,9 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 animate-bounce text-white text-sm tracking-wider font-mono">
-          scroll
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center text-white text-sm tracking-wider font-mono">
+          <span className="mb-1">scroll</span>
+          <div className="w-px h-4 bg-white animate-bounce" />
         </div>
       </section>
 
@@ -64,13 +64,13 @@ export default function Home() {
               </h2>
               <hr className="border-t border-stone-300 w-12 mx-auto mb-8" />
               <p className="text-lg md:text-xl font-body leading-relaxed md:leading-loose max-w-prose mx-auto md:mx-0">
-                Studio Remade started in a small room, with a secondhand sewing
-                machine and a lot of trial and error. I'm not classically
-                trained — just self-taught and deeply drawn to the idea that
-                clothing can be both function and feeling. Every piece I make
-                carries a bit of where I'm at — imperfect, expressive,
-                intentional. This is a one-person studio. Every stitch, every
-                seam, every idea — built by hand, from scratch.
+                Studio Remade started in a small room, with a sewing machine and
+                a lot of trial and error. I'm not classically trained — just
+                self-taught and deeply drawn to the idea that clothing can be
+                both function and feeling. Every piece I make carries a bit of
+                where I'm at — imperfect, expressive, intentional. This is a
+                one-person studio. Every stitch, every seam, every idea — built
+                by hand, from scratch.
               </p>
             </div>
           </div>
@@ -121,17 +121,18 @@ export default function Home() {
       </section>
 
       <section className="py-32 px-4 md:px-24 bg-stone-200 text-black">
-        <h2 className="tracking-wide text-3xl md:text-5xl font-bold text-center mb-8 font-heading">
-          Featured Items
+        <h2 className="tracking-tight text-3xl md:text-5xl font-bold text-center mb-6 font-heading">
+          Featured Pieces
         </h2>
 
-        <hr className="border-t border-stone-300 w-12 mx-auto mb-8" />
+        <hr className="border-t border-stone-300 w-12 mx-auto mb-6" />
 
-        <p className="text-lg md:text-xl text-center mb-12 w-3/4 mx-auto font-body">
-          Discover a selection of unique pieces that embody the spirit of Studio
-          Remade. Each item is crafted with care, using upcycled materials and
-          designed to tell a story. Click on any item to learn more about its
-          creation and inspiration.
+        <p className="text-base md:text-lg text-center mb-12 w-11/12 md:w-3/4 mx-auto font-body text-stone-700 leading-snug tracking-wide">
+          A curated selection of pieces that reflect the spirit of Studio Remade
+          — rebuilt from discarded garments, stitched with intention, and full
+          of story.
+          <br className="hidden md:block" />
+          Click on any piece to explore its transformation.
         </p>
 
         <div className="flex flex-col space-y-12">
@@ -177,12 +178,12 @@ export default function Home() {
 
       <section className="py-32 px-8 md:px-24 bg-stone-50 text-black">
         <h2 className="tracking-wide text-3xl md:text-5xl font-bold text-center mb-8 font-heading">
-          Coming Soon
+          In the Works
         </h2>
 
         <hr className="border-t border-stone-300 w-12 mx-auto mb-8" />
 
-        <p className="text-lg md:text-xl text-center mb-8 w-3/4 mx-auto font-body">
+        <p className="text-base md:text-lg text-center mb-12 w-11/12 md:w-3/4 mx-auto font-body text-stone-700 leading-snug tracking-wide">
           Stay tuned for more exciting items that are on the way! These pieces
           will be available soon, so keep an eye out for updates.
         </p>
@@ -221,12 +222,6 @@ export default function Home() {
           <Button>Subscribe</Button>
         </form>
       </section>
-
-      <footer className="py-12 text-center text-sm opacity-50">
-        crafted with love
-        <br />
-        &copy; {new Date().getFullYear()} Studio Remade.
-      </footer>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 // app/fragments/page.tsx
 "use client";
 
+import PageHeader from "@/components/PageHeader";
 import Image from "next/image";
 
 const fragments = [
@@ -29,23 +30,14 @@ const fragments = [
 
 export default function FragmentsPage() {
   return (
-    <section className="min-h-screen bg-stone-100 text-black px-6 md:px-24 py-32 font-body">
-      <div className="max-w-5xl mx-auto space-y-16">
-        {/* Header */}
-        <div className="text-center space-y-6">
-          <h1 className="text-4xl md:text-6xl font-heading font-bold tracking-wide">
-            Fragments
-          </h1>
-          <p className="text-lg md:text-xl max-w-2xl mx-auto text-neutral-700">
-            A peek into the scraps, drafts, and missteps that shaped my creative
-            process. These fragments are the raw material of my designs —
-            sketches, test pieces, and failed experiments. Not for sale — just
-            here to show the mess behind the process.
-          </p>
-        </div>
-
+    <section className="md:px-24 px-4 py-12">
+      <PageHeader
+        title="Fragments"
+        subtitle="A peek into the scraps, drafts, and missteps that shaped my creative process. These fragments are the raw material of my designs — sketches, test pieces, and failed experiments. Not for sale — just here to show the mess behind the process."
+      />
+      <div className="mx-auto space-y-16">
         {/* Grid of Fragments */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {fragments.map((frag) => (
             <div
               key={frag.id}

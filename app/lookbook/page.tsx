@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import PageHeader from "@/components/PageHeader";
 
 const lookbookImages = [
   { src: "/lookbook/2.jpg", alt: "Wide trousers in motion" },
@@ -33,17 +34,11 @@ const lookbookImages = [
 
 export default function LookbookPage() {
   return (
-    <section className="bg-black text-white font-body py-32 px-6 md:px-12">
-      <h1 className="text-4xl md:text-6xl font-heading font-bold mb-16 text-center">
-        LOOKBOOK
-      </h1>
-
-      <p className="max-w-3xl mx-auto text-lg md:text-xl mb-16 text-neutral-300 leading-relaxed text-center">
-        <span className="font-semibold">Explore the latest</span> in my
-        experimental fashion journey. Each piece is a unique blend of
-        sustainability and style, crafted from upcycled materials and designed
-        to inspire. Click on any image to see more details and featured pieces.
-      </p>
+    <section className="md:px-24 px-4 py-12">
+      <PageHeader
+        title="Lookbook"
+        subtitle="A curated collection of my latest experimental fashion pieces. Each image tells a story of creativity, sustainability, and style."
+      />
 
       <div className="overflow-x-auto">
         <div className="flex gap-6 md:gap-12 w-max px-1">

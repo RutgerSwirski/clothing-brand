@@ -27,7 +27,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Studio Remade",
+  title: "Studio Remade.",
   description: "Nothing New. Everything Remade.",
 };
 
@@ -78,6 +78,12 @@ export default function RootLayout({
           </nav>
           <main className="">{children}</main>
         </ReactQueryProvider>
+
+        <footer className="py-12 text-center text-sm bg-black text-white font-body">
+          crafted with love
+          <br />
+          &copy; {new Date().getFullYear()} Studio Remade.
+        </footer>
       </body>
     </html>
   );
