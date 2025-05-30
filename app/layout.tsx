@@ -46,10 +46,37 @@ export default function RootLayout({
           <Navbar />
           <main>{children}</main>
 
-          <footer className="py-12 text-center text-sm bg-black text-white font-body">
-            crafted with love
-            <br />
-            &copy; {new Date().getFullYear()} Studio Remade.
+          <footer className="py-12 px-6 md:px-24 bg-black text-white font-body text-sm text-center">
+            <div className="max-w-4xl mx-auto space-y-4">
+              <p className="tracking-wide opacity-80">
+                Crafted slowly, with love, imperfection, and intent.
+              </p>
+
+              <div className="flex justify-center gap-6 text-xs opacity-60">
+                <Link href="products" className="hover:opacity-100 transition">
+                  Products
+                </Link>
+                <Link href="/upcycle" className="hover:opacity-100 transition">
+                  Upcycle
+                </Link>
+
+                <Link
+                  href="/fragments"
+                  className="hover:opacity-100 transition"
+                >
+                  Fragments
+                </Link>
+
+                <Link href="/lookbook" className="hover:opacity-100 transition">
+                  Lookbook
+                </Link>
+              </div>
+
+              <p className="text-xs opacity-50 mt-2">
+                &copy; {new Date().getFullYear()} Studio Remade. All rights
+                reserved.
+              </p>
+            </div>
           </footer>
         </body>
       </html>

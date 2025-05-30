@@ -54,174 +54,188 @@ export default function Home() {
       </section>
 
       {/* Second Section */}
-      <section className="py-32 px-8 md:px-24 text-black bg-stone-100">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-12">
-          {/* Text Section */}
+      <section className="py-32 px-6 md:px-24 bg-stone-100 text-black font-body">
+        <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-start gap-16 md:gap-24">
+          {/* TEXT SECTION */}
           <div className="w-full md:w-1/2">
-            <div className="border border-dashed border-neutral-300 rounded-md p-4 md:p-6">
-              <h2 className="tracking-wide text-3xl md:text-5xl font-heading font-bold mb-8 text-left md:text-center">
-                About Studio Remade{" "}
-                <span className="ml-1 animate-pulse text-green-500">█</span>
-              </h2>
-              <hr className="border-t border-stone-300 w-12 mx-auto mb-8" />
-              <p className="text-lg md:text-xl font-body leading-relaxed md:leading-loose max-w-prose mx-auto md:mx-0">
-                Studio Remade started in a small room, with a sewing machine and
-                a lot of trial and error. I'm not classically trained — just
-                self-taught and deeply drawn to the idea that clothing can be
-                both function and feeling. Every piece I make carries a bit of
-                where I'm at — imperfect, expressive, intentional. This is a
-                one-person studio. Every stitch, every seam, every idea — built
-                by hand, from scratch.
+            <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6 leading-tight tracking-tight">
+              About Studio Remade.{" "}
+              <span className="ml-2 animate-pulse text-green-500">█</span>
+            </h2>
+            <div className="h-[2px] w-16 bg-stone-400 mb-8" />
+            <div className="space-y-6 text-lg md:text-xl leading-relaxed tracking-wide">
+              <p>
+                Studio Remade began in a small room — just me, a sewing machine,
+                and a lot of trial and error. I’m not classically trained — just
+                stubborn, self-taught, and deeply drawn to the idea that
+                clothing should be both functional and emotional.
+              </p>
+              <p>
+                Everything here is made by hand. Every stitch, seam, mistake,
+                and idea comes from a place of honesty. Imperfect. Expressive.
+                Intentional.
+              </p>
+              <p>
+                This is a one-person studio. From fabric to finished form — I
+                build it all from scratch.
               </p>
             </div>
           </div>
 
-          {/* Image Section */}
+          {/* MEDIA SECTION */}
           <div className="w-full md:w-1/2 grid grid-cols-2 gap-4">
-            <div className="aspect-square bg-neutral-200 rounded-lg shadow-sm flex items-center justify-center text-sm text-neutral-500 font-mono">
+            <div className="relative aspect-square overflow-hidden rounded-lg border border-stone-300 shadow-inner">
               <video
-                className="w-full h-full object-cover rounded-lg border border-stone-300 shadow-inner"
                 src="/videos/SewingVHS.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
-            <div className="aspect-square bg-neutral-200 rounded-lg shadow-sm flex items-center justify-center text-sm text-neutral-500 font-mono">
+            <div className="relative aspect-square overflow-hidden rounded-lg border border-stone-300 shadow-inner">
               <Image
                 src="/images/sewingfabric.jpg"
                 alt="Sewing fabric"
-                className="w-full h-full object-cover rounded-lg border border-stone-300 shadow-inner"
+                className="absolute inset-0 w-full h-full object-cover"
                 width={500}
                 height={500}
               />
             </div>
-            <div className="aspect-square bg-neutral-200 rounded-lg shadow-sm flex items-center justify-center text-sm text-neutral-500 font-mono">
+            <div className="relative aspect-square overflow-hidden rounded-lg border border-stone-300 shadow-inner">
               <video
-                className="w-full h-full object-cover rounded-lg border border-stone-300 shadow-inner"
                 src="/videos/workinprogress.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
-            <div className="aspect-square bg-neutral-200 rounded-lg shadow-sm flex items-center justify-center text-sm text-neutral-500 font-mono">
+            <div className="relative aspect-square overflow-hidden rounded-lg border border-stone-300 shadow-inner">
               <video
-                className="w-full h-full object-cover rounded-lg border border-stone-300 shadow-inner"
                 src="/videos/sketching.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-32 px-4 md:px-24 bg-stone-200 text-black">
-        <h2 className="tracking-tight text-3xl md:text-5xl font-bold text-center mb-6 font-heading">
-          Featured Pieces
-        </h2>
+      <section className="py-32 px-6 md:px-24 bg-stone-200 text-black font-body">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center tracking-tight mb-6">
+            Featured Pieces
+          </h2>
 
-        <hr className="border-t border-stone-300 w-12 mx-auto mb-6" />
+          <div className="h-[2px] w-16 bg-stone-400 mx-auto mb-10" />
 
-        <p className="text-base md:text-lg text-center mb-12 w-11/12 md:w-3/4 mx-auto font-body text-stone-700 leading-snug tracking-wide">
-          A curated selection of pieces that reflect the spirit of Studio Remade
-          — rebuilt from discarded garments, stitched with intention, and full
-          of story.
-          <br className="hidden md:block" />
-          Click on any piece to explore its transformation.
-        </p>
+          <p className="text-base md:text-lg text-center mb-20 max-w-2xl mx-auto text-stone-700 leading-relaxed tracking-wide">
+            A curated drop from the cutting table. Each of these pieces carries
+            its own story — deconstructed, rebuilt, and reborn from forgotten
+            garments.
+            <br className="hidden md:block" />
+            Click to uncover their transformation.
+          </p>
 
-        <div className="flex flex-col space-y-12">
-          {/* Item 1 */}
-          <div className="flex flex-col md:flex-row items-center md:justify-between gap-12">
-            {/* Text */}
-            <ItemCard
-              name="Item 1"
-              description="This is a description of item 1."
-              slug="item-1"
-              featured
-            />
+          <div className="space-y-24">
+            {/* Feature Block 1 */}
+            <div className="flex flex-col md:flex-row items-center md:justify-between gap-12">
+              <ItemCard
+                name="Item 1"
+                description="Oversized boxy jacket made from two vintage canvas coats, finished with raw hems and topstitched pleats."
+                slug="item-1"
+                featured
+              />
+              <ItemCard
+                name="Item 2"
+                description="Two-tone hoodie spliced from thrifted knitwear and lined with deconstructed shirting."
+                slug="item-2"
+                featured
+              />
+            </div>
 
-            {/* Image */}
-            <ItemCard
-              name="Item 2"
-              description="This is a description of item 2."
-              slug="item-2"
-              featured
-            />
+            {/* Feature Block 2 */}
+            <div className="flex flex-col md:flex-row-reverse items-center md:justify-between gap-12">
+              <ItemCard
+                name="Item 3"
+                description="Wide-leg trousers crafted from old military fatigues, restructured with sculptural pleats."
+                slug="item-3"
+                featured
+              />
+              <ItemCard
+                name="Item 4"
+                description="Cropped denim jacket made from multiple pairs of jeans — with asymmetrical paneling and reinforced stitching."
+                slug="item-4"
+                featured
+              />
+            </div>
           </div>
+        </div>
+      </section>
 
-          {/* Item 2 */}
-          <div className="flex flex-col md:flex-row-reverse items-center md:justify-between gap-12">
-            {/* Text */}
+      <section className="py-32 px-6 md:px-24 bg-stone-50 text-black font-body">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center tracking-tight mb-6">
+            In the Works
+          </h2>
+
+          <div className="h-[2px] w-16 bg-stone-300 mx-auto mb-8" />
+
+          <p className="text-base md:text-lg text-center mb-16 max-w-2xl mx-auto text-stone-700 tracking-wide leading-relaxed">
+            A look behind the curtain — these upcoming pieces are
+            mid-transformation. Each one is being reimagined, rebuilt, and soon
+            ready to wear. Keep an eye out.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <ItemCard
-              name="Item 3"
-              description="This is a description of item 3."
-              slug="item-3"
-              featured
+              name="Item 5"
+              description="Structured, raw-edged outer layer made from two upcycled work jackets."
+              slug="item-5"
+              comingSoon
             />
 
-            {/* Image */}
             <ItemCard
-              name="Item 4"
-              description="This is a description of item 4."
-              slug="item-4"
-              featured
+              name="Item 6"
+              description="Draped top formed from deconstructed knitwear and shirt panels."
+              slug="item-6"
+              comingSoon
             />
           </div>
         </div>
       </section>
 
-      <section className="py-32 px-8 md:px-24 bg-stone-50 text-black">
-        <h2 className="tracking-wide text-3xl md:text-5xl font-bold text-center mb-8 font-heading">
-          In the Works
-        </h2>
+      <section className="bg-black text-white px-6 md:px-24 py-24 text-center font-body">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold mb-4">
+            Stay in the Loop
+          </h2>
 
-        <hr className="border-t border-stone-300 w-12 mx-auto mb-8" />
+          <p className="text-base md:text-lg opacity-80 mb-8 leading-relaxed">
+            Be the first to know about new drops, behind-the-scenes moments, and
+            studio notes. No spam — just thoughtful updates, sometimes with
+            thread still on my hands.
+          </p>
 
-        <p className="text-base md:text-lg text-center mb-12 w-11/12 md:w-3/4 mx-auto font-body text-stone-700 leading-snug tracking-wide">
-          Stay tuned for more exciting items that are on the way! These pieces
-          will be available soon, so keep an eye out for updates.
-        </p>
+          <form className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <input
+              type="email"
+              placeholder="your@email.com"
+              className="w-full md:w-1/2 px-5 py-3 rounded-md text-black bg-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-white"
+            />
+            <Button className="w-full md:w-auto px-6 py-3">Subscribe</Button>
+          </form>
 
-        <div className="flex flex-col md:flex-row items-center md:justify-between gap-8">
-          <ItemCard
-            name="Item 5"
-            description="This is a description of item 5."
-            slug="item-5"
-            comingSoon
-          />
-
-          <ItemCard
-            name="Item 6"
-            description="This is a description of item 6."
-            slug="item-6"
-            comingSoon
-          />
+          <p className="text-xs opacity-60 mt-4">
+            You can unsubscribe anytime. Your email stays with me.
+          </p>
         </div>
-      </section>
-
-      <section className="bg-black text-white px-6 md:px-24 py-24 text-center">
-        <h2 className="text-3xl md:text-5xl font-heading mb-6">
-          Stay in the Loop
-        </h2>
-        <p className="text-lg mb-6 font-body opacity-80">
-          Join the Studio Remade mailing list — early drops, behind the scenes &
-          more.
-        </p>
-        <form className="flex flex-col md:flex-row items-center justify-center gap-4">
-          <input
-            type="email"
-            placeholder="your@email.com"
-            className="bg-white text-black px-4 py-2 rounded w-full md:w-1/3"
-          />
-          <Button>Subscribe</Button>
-        </form>
       </section>
     </div>
   );
