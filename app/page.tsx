@@ -30,23 +30,24 @@ export default function Home() {
 
         {/* Hero Content */}
         <div className="absolute top-1/2 left-6 md:left-24 transform -translate-y-1/2 z-20 text-white max-w-xl">
-          <h1 className="text-6xl md:text-7xl font-heading font-extrabold tracking-tight leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
+          <h1 className="text-5xl md:text-7xl font-heading font-extrabold tracking-tight leading-tight md:leading-none drop-shadow">
             Studio
             <br />
-            Remade.
+            Remade<span className="text-white">.</span>
           </h1>
 
-          <p className="text-lg md:text-2xl font-body font-light tracking-widest mb-8 text-neutral-200">
+          <p className="mt-4 text-base md:text-2xl font-light tracking-widest text-neutral-200">
             Nothing New. Everything Remade.
           </p>
+
           <Link href="/products" passHref>
-            <Button className="transition-transform hover:scale-105 hover:bg-white/90 hover:text-black">
+            <Button className="mt-6 transition-transform hover:scale-105 hover:bg-white/90 hover:text-black">
               View Products
             </Button>
           </Link>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center text-white text-sm tracking-wider font-mono">
+        <div className="absolute bottom-20 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center text-white text-sm tracking-wider">
           <span className="mb-1">scroll</span>
           <div className="w-px h-4 bg-white animate-bounce" />
         </div>

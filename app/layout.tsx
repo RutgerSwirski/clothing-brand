@@ -38,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <ReactQueryProvider>
+    <ReactQueryProvider>
+      <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased ${inter.variable} ${spaceGrotesk.variable} `}
         >
@@ -52,7 +52,7 @@ export default function RootLayout({
             &copy; {new Date().getFullYear()} Studio Remade.
           </footer>
         </body>
-      </ReactQueryProvider>
-    </html>
+      </html>
+    </ReactQueryProvider>
   );
 }
