@@ -5,6 +5,7 @@ import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import { Geist_Mono, Geist } from "next/font/google";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Navbar from "@/components/navbar/Navbar";
 
 const inter = Geist({
   variable: "--font-body",
@@ -31,14 +32,6 @@ export const metadata: Metadata = {
   description: "Nothing New. Everything Remade.",
 };
 
-const navbarLinks = [
-  { label: "Products", href: "/products" },
-  { label: "Upcycle", href: "/upcycle" },
-  // { label: "Mystery Box", href: "/mystery-box" },
-  { label: "Fragments", href: "/fragments" },
-  { label: "Lookbook", href: "/lookbook" },
-];
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -46,45 +39,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased ${inter.variable} ${spaceGrotesk.variable} `}
-      >
-        <ReactQueryProvider>
-          <nav className="fixed top-0 left-0 w-full z-30 px-8 md:px-16 py-4 bg-black  backdrop-blur-md text-white font-body">
-            <div className="flex items-center justify-between">
-              {/* Logo / Brand */}
-              <Button
-                asChild
-                variant="ghost"
-                className="text-2xl font-heading font-bold tracking-wide"
-              >
-                <Link href="/">Studio Remade.</Link>
-              </Button>
+      <ReactQueryProvider>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased ${inter.variable} ${spaceGrotesk.variable} `}
+        >
+          <Navbar />
+          <main>{children}</main>
 
-              {/* Nav Links */}
-              <div className="flex space-x-4">
-                {navbarLinks.map(({ label, href }) => (
-                  <Button
-                    key={label}
-                    asChild
-                    variant="ghost"
-                    className="transition-transform hover:scale-105 hover:bg-white/90 hover:text-black"
-                  >
-                    <Link href={href}>{label}</Link>
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </nav>
-          <main className="">{children}</main>
-        </ReactQueryProvider>
-
-        <footer className="py-12 text-center text-sm bg-black text-white font-body">
-          crafted with love
-          <br />
-          &copy; {new Date().getFullYear()} Studio Remade.
-        </footer>
-      </body>
+          <footer className="py-12 text-center text-sm bg-black text-white font-body">
+            crafted with love
+            <br />
+            &copy; {new Date().getFullYear()} Studio Remade.
+          </footer>
+        </body>
+      </ReactQueryProvider>
     </html>
   );
 }
