@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 const navbarLinks = [
   { label: "Products", href: "/products" },
@@ -19,6 +20,7 @@ const navbarLinks = [
 ];
 
 const Navbar = () => {
+  const [open, setOpen] = useState(false);
   return (
     <nav className="fixed top-0 left-0 w-full z-30 px-6 md:px-16 py-4 bg-black backdrop-blur-md text-white font-body">
       <div className="flex items-center justify-between">
@@ -47,7 +49,7 @@ const Navbar = () => {
 
         {/* Mobile Nav */}
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6 text-white" />
@@ -58,6 +60,7 @@ const Navbar = () => {
                 <Link
                   className="text-2xl font-heading font-bold tracking-wide w-fit"
                   href="/"
+                  onClick={() => setOpen(false)}
                 >
                   Studio Remade.
                 </Link>
@@ -69,6 +72,7 @@ const Navbar = () => {
                   asChild
                   variant="ghost"
                   className="w-full justify-start text-lg"
+                  onClick={() => setOpen(false)}
                 >
                   <Link href={href}>{label}</Link>
                 </Button>
