@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import PageHeader from "@/components/PageHeader";
 
 export default function UpcycleOrder() {
   const router = useRouter();
@@ -30,19 +31,18 @@ export default function UpcycleOrder() {
   });
 
   return (
-    <section className="mx-auto max-w-xl px-6 md:px-12 py-24 font-body">
-      <h1 className="font-heading text-4xl mb-6 tracking-wide">
-        Start Your Upcycle
-      </h1>
-      <p className="text-base text-neutral-600 mb-10">
-        This form lets me know you’re interested. I’ll follow up with details
-        about shipping and timeline.
-      </p>
+    <section className="md:px-24 px-4 py-16 font-body">
+      <PageHeader
+        title="Upcycle Inquiry"
+        subtitle="Send me your worn, forgotten clothes. I’ll unpick and rebuild them into something bold and personal — reworked, signed, and one-of-a-kind."
+      />
 
-      <div className="space-y-6">
+      <div className="max-w-2xl mx-auto mt-12 space-y-8">
         {/* Name */}
-        <div>
-          <label className="block text-sm mb-1 font-medium">Name</label>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium tracking-wide text-neutral-700">
+            Name
+          </label>
           <Input
             placeholder="Your name"
             value={form.name}
@@ -51,19 +51,21 @@ export default function UpcycleOrder() {
         </div>
 
         {/* Email */}
-        <div>
-          <label className="block text-sm mb-1 font-medium">Email</label>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium tracking-wide text-neutral-700">
+            Email
+          </label>
           <Input
-            placeholder="your@email.com"
             type="email"
+            placeholder="your@email.com"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
         </div>
 
         {/* Path Selection */}
-        <div>
-          <label className="block text-sm mb-1 font-medium">
+        <div className="space-y-1">
+          <label className="block text-sm font-medium tracking-wide text-neutral-700">
             Choose a Path
           </label>
           <Select
@@ -82,14 +84,20 @@ export default function UpcycleOrder() {
         </div>
 
         {/* Notes */}
-        <div>
-          <label className="block text-sm mb-1 font-medium">Notes</label>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium tracking-wide text-neutral-700">
+            Notes
+          </label>
           <Textarea
-            placeholder="Sizing, fit, preferred vibe or colors..."
+            placeholder="Sizing, fit, preferred vibe, colors, inspiration..."
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            rows={8}
+            rows={6}
           />
+          <p className="text-xs text-stone-500 italic mt-1">
+            Share anything that helps me rework your clothes into something
+            you’ll love.
+          </p>
         </div>
 
         {/* CTA */}
@@ -101,8 +109,8 @@ export default function UpcycleOrder() {
           >
             {isLoading ? "Sending..." : "Submit Inquiry"}
           </Button>
-          <p className="text-xs text-neutral-500 mt-2 text-center">
-            You’ll hear back within 2–3 days.
+          <p className="text-xs text-neutral-500 mt-3 text-center italic">
+            I’ll get back to you within 2–3 days.
           </p>
         </div>
       </div>

@@ -10,6 +10,8 @@ import {
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
 
 const navbarLinks = [
   { label: "Products", href: "/products" },
@@ -20,6 +22,13 @@ const navbarLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    return pathname === href || pathname.startsWith(href);
+  };
+
   return (
     <nav className="fixed top-0 left-0 w-full z-30 px-6 md:px-16 py-4 bg-black backdrop-blur-md text-white font-body">
       <div className="flex items-center justify-between">
@@ -39,7 +48,11 @@ const Navbar = () => {
               key={label}
               asChild
               variant="ghost"
-              className="transition-transform hover:scale-105 hover:bg-white/90 hover:text-black"
+              className={clsx(
+                "transition-transform hover:scale-105 hover:bg-white/90 hover:text-black",
+                isActive(href) && "text-white bg-white/10"
+              )}
+              //   className="transition-transform hover:scale-105 hover:bg-white/90 hover:text-black"
             >
               <Link href={href}>{label}</Link>
             </Button>
@@ -70,7 +83,10 @@ const Navbar = () => {
                   key={label}
                   asChild
                   variant="ghost"
-                  className="w-full justify-start text-lg"
+                  className={clsx(
+                    "w-full text-left transition-transform hover:scale-105 hover:bg-white/90 hover:text-black",
+                    isActive(href) && "text-white bg-white/10"
+                  )}
                   onClick={() => setOpen(false)}
                 >
                   <Link href={href}>{label}</Link>
