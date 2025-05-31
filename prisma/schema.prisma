@@ -23,6 +23,7 @@ model Product {
   tags        Tag[]    @relation("ProductTags")
   slug        String   @unique
   comingSoon  Boolean  @default(false)
+  Order       Order[]
 }
 
 model Image {
@@ -41,4 +42,14 @@ model Tag {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   slug      String    @unique
+}
+
+model Order {
+  id              String    @id @default(cuid())
+  email           String
+  items           Product[] // assuming `Product` model exists
+  total           Int
+  status          String
+  createdAt       DateTime  @default(now())
+  stripeSessionId String?   @unique
 }

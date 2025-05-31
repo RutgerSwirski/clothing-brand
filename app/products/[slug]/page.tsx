@@ -33,6 +33,8 @@ const handleBuyNow = async (product) => {
           price: product.price * 100, // Convert to cents
           image: product.image,
           quantity: 1,
+          id: product.id, // Ensure product ID is included
+          slug: product.slug, // Ensure product slug is included
         },
       ],
     });
