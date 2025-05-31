@@ -7,11 +7,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"; // shadcn
 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"; // shadcn
+
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js"; // stripe.js
+import clsx from "clsx";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
@@ -94,16 +103,30 @@ const ProductPage = () => {
   return (
     <section className="flex flex-col md:flex-row min-h-screen bg-white text-black mt-16">
       {/* Left: Image or carousel */}
-      <div className="w-full md:w-1/2 md:sticky md:top-16 md:h-screen flex items-center justify-center border-r border-black/10">
-        <video
-          src="/videos/placeholderfashion.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          aria-label="Looping studio footage of the item in motion"
-          className="w-full object-cover h-full"
-        />
+
+      <div className="w-full md:w-1/2 md:sticky md:top-12 md:h-screen border-r border-black/10 h-[80vh]">
+        <Carousel opts={{ loop: true }} className="w-full h-full">
+          <CarouselContent className="h-full">
+            {product.images.map((img: { url: string }, idx: number) => (
+              <CarouselItem
+                key={idx}
+                className="w-full md:h-screen h-[80vh] relative"
+              >
+                <div className="relative w-full h-full">
+                  <Image
+                    src={img.url}
+                    alt={`Product image ${idx + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (min-width: 769px) 50vw"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10" />
+          <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10" />
+        </Carousel>
       </div>
 
       {/* Right: Scrollable Details */}
@@ -121,24 +144,27 @@ const ProductPage = () => {
               "This piece is a rework of existing materials, made slowly and intentionally. Its shape, texture, and flaws are all part of the story."}
           </p>
           <p className="text-2xl font-bold">${product.price}</p>
-          <span
-            className={`text-sm font-medium ${product.available ? "text-green-600" : "text-red-500"}`}
-          >
-            {product.stock > 0 ? "In Stock" : "Out of Stock"}
+          <span className="text-sm font-semibold text-stone-600">
+            Made to order · Each piece is unique
           </span>
         </div>
 
         {/* Purchase Buttons */}
-        <div className="flex flex-col md:flex-row gap-4">
-          <button className="bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+          {/* <button className="bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition">
             Add to Cart
-          </button>
+          </button> */}
           <button
             onClick={() => handleBuyNow(product)}
-            className="border border-black px-6 py-3 rounded hover:bg-black hover:text-white transition"
+            className="bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition w-full md:w-auto hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
           >
             Buy Now
           </button>
+
+          {/* show how many in available to buy -  stock... however all items are Made to Order */}
+          <span className="text-sm text-neutral-500 mt-2 md:mt-0">
+            Made to order – allow 2–3 weeks for creation and shipping
+          </span>
         </div>
 
         {/* Sizing Info */}

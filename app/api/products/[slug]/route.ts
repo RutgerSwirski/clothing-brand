@@ -9,6 +9,9 @@ export async function GET(
     where: {
       slug: params.slug,
     },
+    include: {
+      images: true,
+    },
   });
 
   if (!product) {

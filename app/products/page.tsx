@@ -115,9 +115,10 @@ export default function ProductsPage() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="all">All Availability</SelectItem>
-                    <SelectItem value="in-stock">In Stock</SelectItem>
-                    <SelectItem value="out-of-stock">Out of Stock</SelectItem>
-                    <SelectItem value="pre-order">Pre-order</SelectItem>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="coming-soon">Coming Soon</SelectItem>
+                    <SelectItem value="sold">Sold</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -136,10 +137,10 @@ export default function ProductsPage() {
                   <SelectGroup>
                     <SelectItem value="newest">Newest</SelectItem>
                     <SelectItem value="oldest">Oldest</SelectItem>
-                    <SelectItem value="price-low-to-high">
+                    <SelectItem value="price-asc">
                       Price: Low to High
                     </SelectItem>
-                    <SelectItem value="price-high-to-low">
+                    <SelectItem value="price-desc">
                       Price: High to Low
                     </SelectItem>
                   </SelectGroup>

@@ -10,20 +10,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProductStatus {
+  AVAILABLE
+  SOLD
+  COMING_SOON
+  ARCHIVED
+}
+
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   name        String
-  slug        String   @unique
+  slug        String        @unique
   description String?
   price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   images      Image[]
-  comingSoon  Boolean  @default(false)
-  stock       Int      @default(0)
-  isAvailable Boolean  @default(true)
-  sold        Boolean  @default(false)
-  orders      Order[]  @relation("OrderItems")
+  status      ProductStatus @default(AVAILABLE)
+  orders      Order[]       @relation("OrderItems")
 }
 
 enum OrderStatus {

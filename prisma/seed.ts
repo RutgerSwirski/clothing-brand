@@ -9,11 +9,8 @@ type Product = {
   slug: string;
   price: number;
   description: string;
-  isAvailable?: boolean;
-  comingSoon?: boolean;
   images?: string[];
-  sold: boolean;
-  stock?: number;
+  status: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED";
 };
 
 async function main() {
@@ -32,8 +29,6 @@ async function main() {
 
     const price = faker.number.float({ min: 10, max: 1000, fractionDigits: 2 });
     const description = faker.commerce.productDescription();
-    const isAvailable = faker.datatype.boolean();
-    const comingSoon = faker.datatype.boolean();
     const images = Array.from(
       { length: faker.number.int({ min: 1, max: 3 }) },
       () =>
@@ -41,18 +36,24 @@ async function main() {
           .url({ width: 640, height: 480 })
           .replace(/^http:\/\//, "https://")
     );
-    const sold = faker.datatype.boolean();
-    const stock = isAvailable ? faker.number.int({ min: 1, max: 100 }) : 0;
+
+    // pick a random status
+    // from the list of available statuses
+
+    const status = faker.helpers.arrayElement([
+      "AVAILABLE",
+      "COMING_SOON",
+      "SOLD",
+      "ARCHIVED",
+    ]);
+
     const product: Product = {
       name,
       slug,
       price,
       description,
-      isAvailable,
-      comingSoon,
       images,
-      sold,
-      stock,
+      status,
     };
 
     await prisma.product.create({
@@ -61,13 +62,10 @@ async function main() {
         slug: product.slug,
         price: product.price,
         description: product.description,
-        isAvailable: product.isAvailable,
-        comingSoon: product.comingSoon,
-        sold: product.sold,
-        stock: product.stock,
         images: {
           create: product.images?.map((url) => ({ url })) || [],
         },
+        status: product.status,
       },
     });
   }

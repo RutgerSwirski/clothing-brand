@@ -16,9 +16,9 @@ type ItemCardProps = {
   description: string;
   images?: string[];
   slug?: string;
-  isAvailable?: boolean;
-  comingSoon?: boolean;
   featured?: boolean;
+  status?: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED";
+  price?: number;
 };
 
 const ItemCard = ({
@@ -26,9 +26,9 @@ const ItemCard = ({
   description,
   images = [],
   slug,
-  isAvailable,
-  comingSoon = false,
+  status = "AVAILABLE",
   featured = false,
+  price,
 }: ItemCardProps) => {
   return (
     <div
@@ -45,14 +45,19 @@ const ItemCard = ({
         <div className="aspect-[4/5] md:aspect-auto w-full h-full relative">
           {/* Badges on top of image */}
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-            {comingSoon && (
-              <span className="text-xs uppercase font-semibold bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full shadow-sm">
+            {status === "COMING_SOON" && (
+              <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
                 Coming Soon
               </span>
             )}
-            {!isAvailable && !comingSoon && (
-              <span className="text-xs uppercase font-semibold bg-red-200 text-red-800 px-3 py-1 rounded-full shadow-sm">
-                Sold Out
+            {status === "SOLD" && (
+              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                Sold
+              </span>
+            )}
+            {status === "ARCHIVED" && (
+              <span className="bg-gray-500 text-white text-xs px-2 py-1 rounded-full">
+                Archived
               </span>
             )}
           </div>
@@ -82,11 +87,24 @@ const ItemCard = ({
       {/* Content */}
       <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between gap-6">
         <div>
-          <h2 className="text-2xl md:text-3xl font-heading font-bold text-black mb-3">
-            {name}
-          </h2>
+          <Link href={`/products/${slug}`} passHref>
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-black mb-3 tracking-tight hover:underline">
+              {name}
+            </h2>
+          </Link>
+          {/* Description */}
           <p className="text-sm md:text-base text-neutral-700 leading-relaxed tracking-wide">
             {description}
+          </p>
+
+          {/* Status */}
+          <p className="text-sm md:text-base text-neutral-700 leading-relaxed tracking-wide">
+            Status: {status}
+          </p>
+
+          {/* price */}
+          <p className="text-lg md:text-xl font-semibold text-black mt-2">
+            {price ? `$${price.toFixed(2)}` : "Price not available"}
           </p>
         </div>
 
@@ -94,7 +112,7 @@ const ItemCard = ({
         <div className="flex flex-wrap items-center gap-4">
           <Button
             className="w-fit text-sm px-5 py-2"
-            disabled={!isAvailable || comingSoon}
+            disabled={status !== "AVAILABLE"}
           >
             Buy Now
           </Button>

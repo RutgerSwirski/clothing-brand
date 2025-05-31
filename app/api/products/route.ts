@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import type { ProductStatus } from "@prisma/client";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -8,14 +9,18 @@ export async function GET(req: Request) {
   const availability = searchParams.get("availability");
   const sortBy = searchParams.get("sortBy");
   const search = searchParams.get("search") || "";
-
   const where = {
     ...(category && category !== "all" ? { category } : {}),
     ...(availability === "in-stock"
-      ? { stock: { gt: 0 } }
-      : availability === "out-of-stock"
-        ? { stock: { lte: 0 } }
-        : {}),
+      ? { status: "AVAILABLE" as ProductStatus }
+      : availability === "coming-soon"
+        ? { status: "COMING_SOON" as ProductStatus }
+        : availability === "sold"
+          ? { status: "SOLD" as ProductStatus }
+          : availability === "archived"
+            ? { status: "ARCHIVED" as ProductStatus }
+            : {}), // Filter by availability status
+
     ...(search
       ? {
           name: {
@@ -27,11 +32,15 @@ export async function GET(req: Request) {
   };
 
   const orderBy =
-    sortBy === "price-low-to-high"
+    sortBy === "price-asc"
       ? { price: "asc" as const }
-      : sortBy === "price-high-to-low"
+      : sortBy === "price-desc"
         ? { price: "desc" as const }
-        : { createdAt: "desc" as const };
+        : sortBy === "newest"
+          ? { createdAt: "desc" as const }
+          : sortBy === "oldest"
+            ? { createdAt: "asc" as const }
+            : { createdAt: "desc" as const }; // Default to newest
 
   const products = await prisma.product.findMany({
     where,
