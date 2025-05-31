@@ -2,6 +2,7 @@
 
 import { Resend } from "resend";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "");
 
@@ -31,6 +32,23 @@ export async function POST(req: Request) {
         "X-Custom-Header": "Upcycle Inquiry",
       },
     });
+
+    const createEnquiry = await prisma.upcycleEnquiry.create({
+      data: {
+        email,
+        name,
+        message: notes,
+        path,
+      },
+    });
+
+    if (!createEnquiry) {
+      return NextResponse.json(
+        { error: "Failed to create upcycle enquiry." },
+        { status: 500 }
+      );
+    }
+
     console.log(`Email sent to: ${email}`);
   } catch (error) {
     console.error("Error sending email with Resend:", error);
