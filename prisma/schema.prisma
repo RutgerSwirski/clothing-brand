@@ -10,20 +10,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// we need to create Product model
 model Product {
   id          Int      @id @default(autoincrement())
   name        String
+  slug        String   @unique
   description String?
   price       Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   images      Image[]
-  available   Boolean  @default(true)
-  tags        Tag[]    @relation("ProductTags")
-  slug        String   @unique
   comingSoon  Boolean  @default(false)
-  Order       Order[]
+  stock       Int      @default(0)
+  isAvailable Boolean  @default(true)
+  sold        Boolean  @default(false)
+  orders      Order[]  @relation("OrderItems")
+}
+
+enum OrderStatus {
+  paid
+  pending
+  failed
+  refunded
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  email           String
+  items           Product[]   @relation("OrderItems")
+  total           Float
+  status          OrderStatus
+  stripeSessionId String?     @unique
+  createdAt       DateTime    @default(now())
 }
 
 model Image {
@@ -33,23 +50,4 @@ model Image {
   product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model Tag {
-  id        Int       @id @default(autoincrement())
-  name      String
-  products  Product[] @relation("ProductTags")
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  slug      String    @unique
-}
-
-model Order {
-  id              String    @id @default(cuid())
-  email           String
-  items           Product[] // assuming `Product` model exists
-  total           Int
-  status          String
-  createdAt       DateTime  @default(now())
-  stripeSessionId String?   @unique
 }

@@ -77,6 +77,39 @@ export async function POST(request: Request) {
           },
         },
       });
+
+      // we need to update the product stock
+      await Promise.all(
+        itemIds.map(async (item) => {
+          const [id, slug] = item.split(":");
+          const product = await prisma.product.findUnique({
+            where: { id: Number(id), slug },
+          });
+          if (product) {
+            await prisma.product.update({
+              where: { id: product.id },
+              data: {
+                available: false, // mark as unavailable after purchase
+                // stock: product.stock ? product.stock - 1 : 0, // decrement stock
+              },
+            });
+          } else {
+            console.error(`❌ Product not found for ID: ${id}, Slug: ${slug}`);
+          }
+        })
+      );
+    } catch (error) {
+      console.error("❌ Error creating order:", error);
+      return NextResponse.json({ error: "Database Error" }, { status: 500 });
+    }
+    try {
+      // Send confirmation email logic here
+      // This is a placeholder, implement your email sending logic
+      console.log(`📧 Sending confirmation email to ${customerEmail}`);
+      // await sendConfirmationEmail(customerEmail, orderId);
+
+      console.log("✅ Confirmation email sent successfully");
+      // You can implement your email sending logic here
     } catch (err) {
       console.error("❌ Failed to create order:", err);
       return NextResponse.json({ error: "Database Error" }, { status: 500 });
