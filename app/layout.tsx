@@ -6,6 +6,7 @@ import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import NextAuthProvider from "@/components/providers/NextAuthProvider";
+import { Toaster } from "sonner";
 
 const inter = Geist({
   variable: "--font-body",
@@ -45,6 +46,7 @@ export default function RootLayout({
         >
           <NextAuthProvider>
             <div className="flex flex-col min-h-screen">
+              <Toaster position="top-center" />
               <Navbar />
 
               <main className="flex-1">{children}</main>

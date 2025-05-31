@@ -12,12 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface Order {
   id: string;
   email: string;
   total: number;
-  status: "paid" | "pending" | "cancelled";
+
+  status: "paid" | "pending" | "failed" | "refunded";
   items: { name: string }[];
   createdAt: string;
 }
@@ -27,10 +30,18 @@ export default function OrdersList({ orders }: { orders: Order[] }) {
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     setUpdating(orderId);
-    console.log(`Updating order ${orderId} to status: ${newStatus}`);
-    // TODO: call your API to update order status
-    await new Promise((r) => setTimeout(r, 800)); // fake delay
-    setUpdating(null);
+    try {
+      const response = await axios.patch(`/api/orders/${orderId}`, {
+        status: newStatus,
+      });
+      toast.success("Order updated");
+      console.log("Order updated successfully:", response.data);
+    } catch (error) {
+      console.error("Error updating order:", error);
+      toast.error("Failed to update order status");
+    } finally {
+      setUpdating(null);
+    }
   };
 
   return (
@@ -83,10 +94,8 @@ export default function OrdersList({ orders }: { orders: Order[] }) {
                 </Link>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <p className={`text-sm font-medium ${statusColor}`}>
-                  Status: {order.status}
-                </p>
+              <div className="flex items-center gap-4">
+                <p className={`text-sm font-medium ${statusColor}`}>Status:</p>
 
                 <Select
                   onValueChange={(value) => handleStatusChange(order.id, value)}
@@ -101,7 +110,8 @@ export default function OrdersList({ orders }: { orders: Order[] }) {
                       <SelectLabel>Update Status</SelectLabel>
                       <SelectItem value="paid">Paid</SelectItem>
                       <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                      <SelectItem value="failed">Failed</SelectItem>
+                      <SelectItem value="refunded">Refunded</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
