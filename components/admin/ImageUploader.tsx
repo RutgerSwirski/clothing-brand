@@ -5,11 +5,14 @@ import axios from "axios";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 export default function ImageUploader({
   onUpload,
+  onRemoveImage,
 }: {
   onUpload: (urls: string[]) => void;
+  onRemoveImage?: (url: string) => void;
 }) {
   const [uploading, setUploading] = useState(false);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -55,6 +58,14 @@ export default function ImageUploader({
     }
   };
 
+  const handleRemoveImage = (url: string) => {
+    setPreviews((prev) => prev.filter((src) => src !== url));
+    if (onRemoveImage) {
+      onRemoveImage(url);
+    }
+    toast.success("Image removed successfully");
+  };
+
   return (
     <div className="space-y-3">
       <label className="text-sm font-medium text-stone-700">
@@ -70,14 +81,26 @@ export default function ImageUploader({
       {previews.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {previews.map((src, i) => (
-            <Image
+            <div
               key={i}
-              src={src}
-              alt={`Preview ${i + 1}`}
-              width={600}
-              height={400}
-              className="object-cover rounded"
-            />
+              className="relative w-48 h-32 overflow-hidden border rounded"
+            >
+              <Image
+                src={src}
+                alt={`Preview ${i + 1}`}
+                width={600}
+                height={400}
+                className="object-cover rounded"
+              />
+              <Button
+                className="absolute top-2 right-2 bg-red-500 text-white"
+                variant="destructive"
+                onClick={() => handleRemoveImage(src)}
+                disabled={uploading}
+              >
+                Remove
+              </Button>
+            </div>
           ))}
         </div>
       )}

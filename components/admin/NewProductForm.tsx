@@ -46,6 +46,7 @@ export default function NewProductForm() {
     setValue,
     getValues,
     formState: { errors },
+    reset,
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -62,6 +63,8 @@ export default function NewProductForm() {
     try {
       await axios.post("/api/products", data);
       toast.success("Product created");
+      // Reset form after successful submission
+      reset();
     } catch (err) {
       toast.error("Failed to create product");
       console.error(err);
@@ -73,6 +76,12 @@ export default function NewProductForm() {
   const handleImageUpload = (urls: string[]) => {
     const current = getValues("images");
     setValue("images", [...current, ...urls], { shouldValidate: true });
+  };
+
+  const handleImageDelete = (url: string) => {
+    const current = getValues("images");
+    const updated = current.filter((image) => image !== url);
+    setValue("images", updated, { shouldValidate: true });
   };
 
   return (
@@ -140,7 +149,10 @@ export default function NewProductForm() {
       </div>
 
       <div>
-        <ImageUploader onUpload={handleImageUpload} />
+        <ImageUploader
+          onUpload={handleImageUpload}
+          onRemoveImage={handleImageDelete}
+        />
 
         {errors.images && (
           <p className="text-sm text-red-500">{errors.images.message}</p>
