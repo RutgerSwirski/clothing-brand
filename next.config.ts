@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       "cdn.shopify.com",
       "loremflickr.com",
       "picsum.photos",
+      "res.cloudinary.com",
     ],
   },
 };
