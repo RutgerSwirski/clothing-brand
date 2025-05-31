@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   const search = searchParams.get("search") || "";
   const where = {
     ...(category && category !== "all" ? { category } : {}),
-    ...(availability === "in-stock"
+    ...(availability === "available"
       ? { status: "AVAILABLE" as ProductStatus }
       : availability === "coming-soon"
         ? { status: "COMING_SOON" as ProductStatus }
@@ -19,7 +19,7 @@ export async function GET(req: Request) {
           ? { status: "SOLD" as ProductStatus }
           : availability === "archived"
             ? { status: "ARCHIVED" as ProductStatus }
-            : {}), // Filter by availability status
+            : {}), // No filter if "all" or not specified
 
     ...(search
       ? {
