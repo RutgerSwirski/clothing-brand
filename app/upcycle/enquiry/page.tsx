@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -13,22 +17,40 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import PageHeader from "@/components/PageHeader";
+
+// ✅ Zod Schema
+const formSchema = z.object({
+  name: z.string().min(2, "Name is too short"),
+  email: z.string().email("Invalid email"),
+  path: z.enum(["structured", "draped", "wildcard"], {
+    errorMap: () => ({ message: "Please select a path" }),
+  }),
+  notes: z.string().min(10, "Please provide more detail"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function UpcycleOrder() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    path: "",
-    notes: "",
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
   });
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: () => axios.post("/api/upcycle", form),
-    onSuccess: () => router.push("/upcycle/thanks"),
+    mutationFn: (data: FormValues) => axios.post("/api/upcycle/enquiry", data),
+    onSuccess: () => router.push("/upcycle/enquiry/thanks"),
   });
+
+  const onSubmit = (data: FormValues) => {
+    mutate(data);
+  };
 
   return (
     <section className="md:px-24 px-4 py-16 font-body">
@@ -37,40 +59,45 @@ export default function UpcycleOrder() {
         subtitle="Send me your worn, forgotten clothes. I’ll unpick and rebuild them into something bold and personal — reworked, signed, and one-of-a-kind."
       />
 
-      <div className="max-w-2xl mx-auto mt-12 space-y-8">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-2xl mx-auto mt-12 space-y-8"
+      >
         {/* Name */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium tracking-wide text-neutral-700">
+          <label className="block text-sm font-medium text-neutral-700">
             Name
           </label>
-          <Input
-            placeholder="Your name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
+          <Input placeholder="Your name" {...register("name")} />
+          {errors.name && (
+            <p className="text-red-500 text-xs">{errors.name.message}</p>
+          )}
         </div>
 
         {/* Email */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium tracking-wide text-neutral-700">
+          <label className="block text-sm font-medium text-neutral-700">
             Email
           </label>
           <Input
             type="email"
             placeholder="your@email.com"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            {...register("email")}
           />
+          {errors.email && (
+            <p className="text-red-500 text-xs">{errors.email.message}</p>
+          )}
         </div>
 
         {/* Path Selection */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium tracking-wide text-neutral-700">
+          <label className="block text-sm font-medium text-neutral-700">
             Choose a Path
           </label>
           <Select
-            onValueChange={(v) => setForm({ ...form, path: v })}
-            value={form.path}
+            onValueChange={(value) =>
+              setValue("path", value as FormValues["path"])
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Structured, Draped, or Wildcard" />
@@ -81,19 +108,24 @@ export default function UpcycleOrder() {
               <SelectItem value="wildcard">Wildcard</SelectItem>
             </SelectContent>
           </Select>
+          {errors.path && (
+            <p className="text-red-500 text-xs">{errors.path.message}</p>
+          )}
         </div>
 
         {/* Notes */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium tracking-wide text-neutral-700">
+          <label className="block text-sm font-medium text-neutral-700">
             Notes
           </label>
           <Textarea
             placeholder="Sizing, fit, preferred vibe, colors, inspiration..."
-            value={form.notes}
-            onChange={(e) => setForm({ ...form, notes: e.target.value })}
             rows={6}
+            {...register("notes")}
           />
+          {errors.notes && (
+            <p className="text-red-500 text-xs">{errors.notes.message}</p>
+          )}
           <p className="text-xs text-stone-500 italic mt-1">
             Share anything that helps me rework your clothes into something
             you’ll love.
@@ -103,7 +135,7 @@ export default function UpcycleOrder() {
         {/* CTA */}
         <div className="pt-6">
           <Button
-            onClick={() => mutate()}
+            type="submit"
             disabled={isLoading}
             className="w-full tracking-widest uppercase text-sm"
           >
@@ -113,7 +145,7 @@ export default function UpcycleOrder() {
             I’ll get back to you within 2–3 days.
           </p>
         </div>
-      </div>
+      </form>
     </section>
   );
 }

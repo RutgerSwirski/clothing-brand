@@ -52,7 +52,7 @@ export default function UpcyclePage() {
 
         {/* CTA */}
         <div className="mt-24 text-center">
-          <Link href="/upcycle/order">
+          <Link href="/upcycle/enquiry" passHref>
             <Button className="px-8 py-3 text-base font-semibold uppercase tracking-widest hover:scale-105 transition">
               Start Your Upcycle
             </Button>
