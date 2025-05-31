@@ -89,8 +89,7 @@ export async function POST(request: Request) {
             await prisma.product.update({
               where: { id: product.id },
               data: {
-                // isAvailable: false, // mark as unavailable after purchase
-                stock: product.stock ? product.stock - 1 : 0, // decrement stock
+                status: "SOLD",
               },
             });
           } else {

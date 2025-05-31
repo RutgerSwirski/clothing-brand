@@ -49,12 +49,12 @@ const handleBuyNow = async (product: {
     const response = await axios.post("/api/checkout", {
       items: [
         {
-          name: product.name,
-          price: product.price * 100, // Convert to cents
-          image: product.image,
+          name: name,
+          price: price * 100, // Convert to cents
+          image: image,
           quantity: 1,
-          id: product.id, // Ensure product ID is included
-          slug: product.slug, // Ensure product slug is included
+          id: id, // Ensure product ID is included
+          slug: slug, // Ensure product slug is included
         },
       ],
     });
@@ -88,7 +88,7 @@ const ProductPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-neutral-500">
-        Loading product...
+        Loading ..
       </div>
     );
   }
@@ -96,10 +96,43 @@ const ProductPage = () => {
   if (isError) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-600">
-        Failed to load product.
+        Failed to load
       </div>
     );
   }
+
+  const {
+    status,
+    images,
+    price,
+    name,
+    description,
+    fit,
+    fitDetails,
+    size,
+    modelSize,
+    modelHeight,
+    modelChestSize,
+    modelWaistSize,
+    fabric,
+    care,
+    shipping,
+    customization,
+    returns,
+    repairs,
+    story = [],
+    behindTheScenesImages = [],
+    details = [],
+  } = product || {};
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-neutral-500">
+        Product not found
+      </div>
+    );
+  }
+
   return (
     <section className="flex flex-col md:flex-row min-h-screen bg-white text-black mt-16">
       {/* Left: Image or carousel */}
@@ -107,7 +140,7 @@ const ProductPage = () => {
       <div className="w-full md:w-1/2 md:sticky md:top-12 md:h-screen border-r border-black/10 h-[80vh]">
         <Carousel opts={{ loop: true }} className="w-full h-full">
           <CarouselContent className="h-full">
-            {product.images.map((img: { url: string }, idx: number) => (
+            {images.map((img: { url: string }, idx: number) => (
               <CarouselItem
                 key={idx}
                 className="w-full md:h-screen h-[80vh] relative"
@@ -130,82 +163,94 @@ const ProductPage = () => {
       </div>
 
       {/* Right: Scrollable Details */}
-      <div className="w-full md:w-1/2 p-8  space-y-12 font-body pb-32">
-        {/* Title & Meta */}
-        <div className="space-y-2">
-          <h1 className="text-3xl md:text-5xl font-heading font-bold tracking-tight">
-            {product.name}
-          </h1>
+      <div className="w-full md:w-1/2 p-8 space-y-12 font-body pb-32">
+        {/* Title + Meta */}
+        <header className="space-y-4">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-3xl md:text-5xl font-heading font-bold tracking-tight">
+              {name}
+            </h1>
+            {status !== "AVAILABLE" && (
+              <span
+                className={clsx(
+                  "px-2 py-1 text-xs font-medium uppercase tracking-wider rounded",
+                  status === "SOLD" && "bg-red-100 text-red-700",
+                  status === "COMING_SOON" && "bg-yellow-100 text-yellow-700",
+                  status === "ARCHIVED" && "bg-stone-200 text-stone-500"
+                )}
+              >
+                {status.replace("_", " ").toLowerCase()}
+              </span>
+            )}
+          </div>
+
           <p className="text-sm uppercase tracking-widest text-stone-400">
             One-of-a-kind · Handcrafted · Signed
           </p>
+
           <p className="text-base text-neutral-700 leading-relaxed">
-            {product.description ||
+            {description ||
               "This piece is a rework of existing materials, made slowly and intentionally. Its shape, texture, and flaws are all part of the story."}
           </p>
-          <p className="text-2xl font-bold">${product.price}</p>
-          <span className="text-sm font-semibold text-stone-600">
-            Made to order · Each piece is unique
-          </span>
-        </div>
 
-        {/* Purchase Buttons */}
-        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-          {/* <button className="bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition">
-            Add to Cart
-          </button> */}
+          <div className="flex items-center gap-4 mt-2">
+            <p className="text-2xl font-bold">${price}</p>
+            <span className="text-sm font-semibold text-stone-600">
+              Made to order · Each piece is unique
+            </span>
+          </div>
+        </header>
+
+        {/* Buy Section */}
+        <section className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <button
             onClick={() => handleBuyNow(product)}
-            className="bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition w-full md:w-auto hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
+            disabled={status !== "AVAILABLE"}
+            className={clsx(
+              "bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition w-full md:w-auto hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer",
+              status !== "AVAILABLE" && "opacity-50 !cursor-not-allowed"
+            )}
           >
             Buy Now
           </button>
-
-          {/* show how many in available to buy -  stock... however all items are Made to Order */}
           <span className="text-sm text-neutral-500 mt-2 md:mt-0">
             Made to order – allow 2–3 weeks for creation and shipping
           </span>
-        </div>
-
-        {/* Sizing Info */}
-        <section className="space-y-1">
-          <h3 className="text-sm font-semibold uppercase text-stone-700 tracking-wider">
-            The Size
-          </h3>
-          <p className="text-sm text-neutral-600">
-            {product.size ||
-              "One size fits most. See details for measurements."}
-          </p>
-          <p className="text-sm text-neutral-600">
-            Model wears size {product.modelSize || "M"}
-          </p>
-          <p className="text-sm text-neutral-600">
-            Model height: {product.modelHeight || "5'8"} (173 cm)
-          </p>
-          <p className="text-sm text-neutral-600">
-            Chest: {product.modelChestSize || "36"} (91 cm)
-          </p>
-          <p className="text-sm text-neutral-600">
-            Waist: {product.modelWaistSize || "28"} (71 cm)
-          </p>
         </section>
 
-        {/* Fit Description */}
-        <section className="space-y-1">
-          <h3 className="text-sm font-semibold uppercase text-stone-700 tracking-wider">
-            The Fit
-          </h3>
-          <p className="text-sm text-neutral-600">
-            {product.fit ||
-              "Relaxed, slightly oversized fit. Designed to be worn loose and comfortable."}
-          </p>
-          <p className="text-sm text-neutral-600">
-            {product.fitDetails ||
-              "The piece drapes beautifully on all body types, with a boxy silhouette that flatters."}
-          </p>
+        {/* Sizing & Fit Info */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold uppercase text-stone-700 tracking-wider">
+              The Size
+            </h3>
+            <p className="text-sm text-neutral-600">
+              {size || "One size fits most. See details for measurements."}
+            </p>
+            <ul className="text-sm text-neutral-600 space-y-1">
+              <li>Model wears size {modelSize || "M"}</li>
+              <li>Height: {modelHeight || "5'8"} (173 cm)</li>
+              <li>Chest: {modelChestSize || "36"} (91 cm)</li>
+              <li>Waist: {modelWaistSize || "28"} (71 cm)</li>
+            </ul>
+          </div>
+
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold uppercase text-stone-700 tracking-wider">
+              The Fit
+            </h3>
+            <p className="text-sm text-neutral-600">
+              {fit ||
+                "Relaxed, slightly oversized fit. Designed to be worn loose and comfortable."}
+            </p>
+            <p className="text-sm text-neutral-600">
+              {fitDetails ||
+                "The piece drapes beautifully on all body types, with a boxy silhouette that flatters."}
+            </p>
+          </div>
         </section>
 
-        {/* Accordion Info */}
+        {/* Info Accordion */}
         <Accordion
           type="single"
           collapsible
@@ -216,44 +261,42 @@ const ProductPage = () => {
               value: "fabric",
               label: "The Fabric",
               content:
-                product.fabric ||
+                fabric ||
                 "Made from 100% organic cotton, pre-washed for softness and durability.",
             },
-
             {
               value: "care",
               label: "Care Instructions",
               content:
-                product.care ||
-                "Cold wash by hand. Hang dry. Iron on low if needed.",
+                care || "Cold wash by hand. Hang dry. Iron on low if needed.",
             },
             {
               value: "shipping",
               label: "Shipping & Returns",
               content:
-                product.shipping ||
-                "Ships worldwide within 3-5 business days. Free shipping on orders over $100.",
+                shipping ||
+                "Ships worldwide within 3–5 business days. Free shipping on orders over $100.",
             },
             {
               value: "customization",
               label: "Customization Options",
               content:
-                product.customization ||
+                customization ||
                 "Custom sizes available upon request. Please contact me for details.",
             },
             {
               value: "returns",
               label: "Returns & Exchanges",
               content:
-                product.returns ||
+                returns ||
                 "All sales are final due to the one-of-a-kind nature of each piece. Please review measurements and details carefully before purchasing.",
             },
             {
               value: "repairs",
               label: "Repairs & Upkeep",
               content:
-                product.repairs ||
-                "I offer free lifetime repairs for all pieces. Just send it back to me and I’ll fix any issues.",
+                repairs ||
+                "I offer free lifetime repairs for all pieces. Just send it back and I’ll fix any issues.",
             },
           ].map(({ value, label, content }) => (
             <AccordionItem key={value} value={value}>
@@ -265,73 +308,47 @@ const ProductPage = () => {
           ))}
         </Accordion>
 
-        {/* Behind the Piece */}
-        <section className="border-t pt-12 text-sm text-neutral-600 leading-relaxed">
-          <h3 className="text-base font-heading font-bold tracking-wider uppercase mb-4 relative inline-block">
-            Behind the Piece
-            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-stone-300" />
+        {/* The Story */}
+        {(story?.length || story) && (
+          <section className="space-y-4 pt-8 border-t">
+            <h3 className="text-base font-heading font-bold uppercase tracking-wider">
+              Behind the Piece
+            </h3>
+
+            {Array.isArray(story) ? (
+              <ul className="list-disc list-inside space-y-2 text-sm text-neutral-600 leading-relaxed">
+                {story.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-neutral-600 leading-relaxed">
+                {story}
+              </p>
+            )}
+          </section>
+        )}
+
+        {/* The Details */}
+        <section className="space-y-4 pt-8 border-t">
+          <h3 className="text-base font-heading font-bold uppercase tracking-wider">
+            Construction & Details
           </h3>
 
-          {Array.isArray(product.story) ? (
-            <ul className="space-y-4 list-disc list-inside">
-              {product.story.map((line, i) => (
-                <li key={i}>{line}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>{product.story || "No story available for this piece."}</p>
-          )}
-
-          <span className="inline-block px-2 py-1 text-xs uppercase tracking-widest text-green-700 bg-green-100 rounded mb-4">
-            Process Archive
-          </span>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(product.behindTheScenesImages || ["/images/placeholder.jpg"]).map(
-              ({ src, caption }, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <Image
-                    src={src}
-                    alt={`Behind the piece image ${idx + 1}`}
-                    width={600}
-                    height={400}
-                    className="rounded-lg shadow-sm"
-                  />
-                  {caption && (
-                    <p className="text-sm text-neutral-500 mt-2">{caption}</p>
-                  )}
-                </div>
-              )
-            )}
-          </div>
-        </section>
-
-        {/* Piece Details */}
-        <section className="mt-12">
-          <h2 className="text-2xl font-heading font-bold mb-4 tracking-tight">
-            Details
-          </h2>
-          <p className="text-sm text-neutral-600 mb-6">
-            Each piece is unique, with its own character and quirks. Here are
-            some of the special features:
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {product.details?.map((detail, idx) => (
-              <div key={idx} className="flex flex-col items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {details.map((detail, idx) => (
+              <div key={idx} className="flex flex-col items-start gap-2">
                 <Image
                   src={detail.image}
                   alt={detail.name}
-                  width={300}
+                  width={400}
                   height={300}
-                  className="rounded-lg shadow-sm mb-2"
+                  className="rounded-lg shadow-sm w-full object-cover"
                 />
-                <h3 className="text-sm font-semibold text-neutral-800">
+                <h4 className="text-sm font-semibold text-neutral-800">
                   {detail.name}
-                </h3>
-                <p className="text-xs text-neutral-500 text-center">
-                  {detail.description}
-                </p>
+                </h4>
+                <p className="text-xs text-neutral-500">{detail.description}</p>
               </div>
             ))}
           </div>
