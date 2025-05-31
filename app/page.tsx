@@ -1,4 +1,5 @@
 import ItemCard from "@/components/ItemCard";
+import NewsletterForm from "@/components/newsletter/NewsletterForm";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -230,14 +231,7 @@ export default function Home() {
             thread still on my hands.
           </p>
 
-          <form className="flex flex-col md:flex-row items-center justify-center gap-4">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="w-full md:w-1/2 px-5 py-3 rounded-md text-black bg-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-white"
-            />
-            <Button className="w-full md:w-auto px-6 py-3">Subscribe</Button>
-          </form>
+          <NewsletterForm />
 
           <p className="text-xs opacity-60 mt-4">
             You can unsubscribe anytime. Your email stays with me.

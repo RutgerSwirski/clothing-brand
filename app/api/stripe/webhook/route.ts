@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
 import Stripe from "stripe";
+
+const resend = new Resend(process.env.RESEND_API_KEY || "");
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
@@ -97,6 +100,23 @@ export async function POST(request: Request) {
           }
         })
       );
+
+      // we also need to send an email to the customer
+      try {
+        await resend.emails.send({
+          from: "Studio Remade <orders@studioremade.studio>",
+          to: customerEmail,
+          subject: "Your Order Confirmation",
+          html: `<p>Thank you for your order! Your order ID is <strong>${orderId}</strong>.</p>
+          <p>We will process your order shortly and send you a confirmation email once it is shipped.</p>`,
+        });
+      } catch (emailError) {
+        console.error("❌ Failed to send confirmation email:", emailError);
+        return NextResponse.json(
+          { error: "Failed to send confirmation email" },
+          { status: 500 }
+        );
+      }
     } catch (error) {
       console.error("❌ Error creating order:", error);
       return NextResponse.json({ error: "Database Error" }, { status: 500 });
