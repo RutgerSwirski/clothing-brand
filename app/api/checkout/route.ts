@@ -7,12 +7,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 });
 
-const orderId = uuidv4(); // or generate in client and pass in request body
-
 export async function POST(request: Request) {
   const body = await request.json();
 
-  console.log("Received request body:", body);
+  const orderId = uuidv4(); // or generate in client and pass in request body
+
+  if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
+    return NextResponse.json(
+      { error: "No items provided in the request" },
+      { status: 400 }
+    );
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -20,22 +25,27 @@ export async function POST(request: Request) {
       mode: "payment",
       line_items: body.items.map(
         (item: {
-          name: string;
-          price: number; // Price in euros
-          image: string; // Image URL
+          id: string;
+          slug: string;
+          price: number;
           quantity: number;
+          name: string;
         }) => ({
           price_data: {
             currency: "eur",
             product_data: {
-              name: item.name,
-              images: [item.image],
+              name: item.name, // Ensure `name` is included in `body.items`
+              metadata: {
+                id: item.id,
+                slug: item.slug,
+              },
             },
-            unit_amount: item.price, // Convert to cents
+            unit_amount: item.price * 100, // Convert to cents
           },
           quantity: item.quantity,
         })
       ),
+
       success_url: `${process.env.NEXT_PUBLIC_URL}/checkout/success?orderId=${orderId}`,
       cancel_url: `${process.env.NEXT_PUBLIC_URL}/checkout/cancel`,
 
@@ -54,13 +64,12 @@ export async function POST(request: Request) {
         ],
       },
 
-      customer_email: body.email || undefined,
+      ...(body.email ? { customer_email: body.email } : {}),
 
       metadata: {
         itemIds: body.items
           .map((item) => `${item.id}:${item.slug}`) // You must include `id` and `slug` in `body.items`
           .join(","),
-        email: body.email || "",
         orderId: orderId, // Include order ID in metadata
       },
     });

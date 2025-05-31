@@ -17,7 +17,18 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
 );
 
-const handleBuyNow = async (product) => {
+const handleBuyNow = async (product: {
+  name: string;
+  price: number;
+  image: string;
+  id: string;
+  slug: string;
+}) => {
+  if (!product) {
+    console.error("No product data provided");
+    return;
+  }
+
   const stripe = await stripePromise;
 
   if (!stripe) {

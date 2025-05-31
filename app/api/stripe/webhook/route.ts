@@ -7,9 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+  api: { bodyParser: false },
 };
 
 export async function POST(request: Request) {
@@ -26,101 +24,66 @@ export async function POST(request: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (err) {
-    console.error("Error constructing Stripe event:", err);
+    console.error("⚠️ Error constructing Stripe event:", err);
     return NextResponse.json({ error: "Webhook Error" }, { status: 400 });
   }
 
-  console.log("Received Stripe event:", event);
+  if (event.type === "checkout.session.completed") {
+    const sessionId = (event.data.object as Stripe.Checkout.Session).id;
 
-  switch (event.type) {
-    case "checkout.session.completed":
-      const session = event.data.object as Stripe.Checkout.Session;
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-      const orderId = session.metadata?.orderId;
+    if (!session) {
+      console.error("❌ Session not found for ID:", sessionId);
+      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    }
 
-      console.log("Checkout session completed:", session.id);
-      // Handle successful checkout session
-      if (session.metadata && session.metadata.itemIds) {
-        const itemIds = session.metadata.itemIds.split(",");
+    const customerEmail = session.customer_details?.email;
 
-        try {
-          await prisma.order.create({
-            data: {
-              id: orderId,
-              email: session.customer_email || "",
-              stripeSessionId: session.id,
-              items: {
-                connect: itemIds.map((item) => {
-                  const [id, slug] = item.split(":");
-                  return { id: Number(id), slug };
-                }),
-              },
-              total: session.amount_total ?? 0,
-              status: "paid",
-            },
-          });
-        } catch (error) {
-          console.error("Error creating order in database:", error);
-          return NextResponse.json(
-            { error: "Failed to create order" },
-            { status: 500 }
-          );
-        }
-        console.log("Order created successfully:", orderId);
-        return NextResponse.json({ received: true }, { status: 200 });
-      } else {
-        console.error("No itemIds found in session metadata");
-        return NextResponse.json(
-          { error: "No itemIds found in session metadata" },
-          { status: 400 }
-        );
-      }
+    if (!customerEmail) {
+      console.error("❌ No customer email found in session");
+      return NextResponse.json(
+        { error: "Missing customer email" },
+        { status: 400 }
+      );
+    }
 
-      break;
-    case "payment_intent.succeeded":
-      const paymentIntent = event.data.object as Stripe.PaymentIntent;
-      console.log("PaymentIntent was successful!", paymentIntent.id);
-      // Handle successful payment intent
-      if (paymentIntent.metadata && paymentIntent.metadata.itemIds) {
-        const itemIds = paymentIntent.metadata.itemIds.split(",");
-        try {
-          await prisma.order.create({
-            data: {
-              id: paymentIntent.metadata.orderId,
-              email: paymentIntent.metadata.buyerEmail || "",
-              stripeSessionId: paymentIntent.id,
-              items: {
-                connect: itemIds.map((item) => {
-                  const [id, slug] = item.split(":");
-                  return { id: Number(id), slug };
-                }),
-              },
-              total: paymentIntent.amount ?? 0,
-              status: "paid",
-            },
-          });
-          console.log(
-            "Order created successfully:",
-            paymentIntent.metadata.orderId
-          );
-        } catch (error) {
-          console.error("Error creating order in database:", error);
-          return NextResponse.json(
-            { error: "Failed to create order" },
-            { status: 500 }
-          );
-        }
-      }
-      break;
-    case "payment_intent.payment_failed":
-      const failedPaymentIntent = event.data.object as Stripe.PaymentIntent;
-      console.error("PaymentIntent failed:", failedPaymentIntent.id);
-      // Handle failed payment intent
+    const customerAddress = session.customer_details?.address;
 
-      break;
-    default:
-      console.warn(`Unhandled event type: ${event.type}`);
-      break;
+    // Ensure required metadata exists
+    const itemIdsRaw = session.metadata?.itemIds;
+    const orderId = session.metadata?.orderId;
+
+    if (!itemIdsRaw) {
+      console.error("❌ No itemIds in metadata");
+      return NextResponse.json({ error: "Missing itemIds" }, { status: 400 });
+    }
+
+    const itemIds = itemIdsRaw.split(",");
+
+    try {
+      await prisma.order.create({
+        data: {
+          id: orderId,
+          email: customerEmail,
+          stripeSessionId: session.id,
+          total: session.amount_total ?? 0,
+          status: "paid",
+          items: {
+            connect: itemIds.map((item) => {
+              const [id, slug] = item.split(":");
+              return { id: Number(id), slug };
+            }),
+          },
+        },
+      });
+    } catch (err) {
+      console.error("❌ Failed to create order:", err);
+      return NextResponse.json({ error: "Database Error" }, { status: 500 });
+    }
+
+    return NextResponse.json({ received: true }, { status: 200 });
   }
+
   return NextResponse.json({ received: true }, { status: 200 });
 }

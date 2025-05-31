@@ -24,8 +24,6 @@ export default function SuccessCheckoutPage() {
     enabled: !!orderId,
   });
 
-  console.log("Order details:", order);
-
   if (isLoading) return <p>Loading your order...</p>;
   if (!order) return <p>Order not found.</p>;
 

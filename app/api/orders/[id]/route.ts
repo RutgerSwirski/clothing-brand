@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  console.log(request, "Request received for order details");
   const url = new URL(request.url);
   const pathname = url.pathname; // e.g. /api/orders/12345
   const orderId = pathname.split("/").pop(); // extract the last segment
