@@ -55,7 +55,7 @@ export default function Home() {
 
       {/* Second Section */}
       <section className="py-32 px-6 md:px-24 bg-stone-100 text-black font-body">
-        <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-start gap-16 md:gap-24">
+        <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row gap-16 md:gap-24 items-center">
           {/* TEXT SECTION */}
           <div className="w-full md:w-1/2">
             <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6 leading-tight tracking-tight">
@@ -67,8 +67,8 @@ export default function Home() {
               <p>
                 Studio Remade began in a small room — just me, a sewing machine,
                 and a lot of trial and error. I’m not classically trained — just
-                stubborn, self-taught, and deeply drawn to the idea that
-                clothing should be both functional and emotional.
+                stubborn, self-taught, and obsessed with the idea that clothing
+                should be both functional and emotional.
               </p>
               <p>
                 Everything here is made by hand. Every stitch, seam, mistake,
@@ -76,8 +76,15 @@ export default function Home() {
                 Intentional.
               </p>
               <p>
-                This is a one-person studio. From fabric to finished form — I
-                build it all from scratch.
+                This is a one-person studio. From fabric to final form — every
+                piece is imagined, drafted, and constructed by hand.
+              </p>
+              <p>
+                Studio Remade is built on the belief that clothing deserves a
+                second life. Most pieces begin with reclaimed fabrics — old
+                garments, vintage stock, or forgotten materials. Occasionally,
+                I’ll use leftover rolls or sustainable textiles to bring an idea
+                to life — always with intention, never for excess.
               </p>
             </div>
           </div>

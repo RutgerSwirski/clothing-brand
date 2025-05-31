@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"; // shadcn
+import { BuyNowButton } from "@/components/ui/BuyNowButton";
 
 import {
   Carousel,
@@ -15,59 +16,11 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"; // shadcn
 
-import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Image from "next/image";
-import { loadStripe } from "@stripe/stripe-js"; // stripe.js
 import clsx from "clsx";
-
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
-);
-
-const handleBuyNow = async (product: {
-  name: string;
-  price: number;
-  image: string;
-  id: string;
-  slug: string;
-}) => {
-  if (!product) {
-    console.error("No product data provided");
-    return;
-  }
-
-  const stripe = await stripePromise;
-
-  if (!stripe) {
-    console.error("Stripe not loaded");
-    return;
-  }
-
-  try {
-    const response = await axios.post("/api/checkout", {
-      items: [
-        {
-          name: name,
-          price: price * 100, // Convert to cents
-          image: image,
-          quantity: 1,
-          id: id, // Ensure product ID is included
-          slug: slug, // Ensure product slug is included
-        },
-      ],
-    });
-
-    const data = await response.data;
-    stripe.redirectToCheckout({
-      sessionId: data.id,
-    });
-  } catch (error) {
-    console.error("Stripe Checkout Error:", error);
-    alert("Failed to redirect to checkout. Please try again later.");
-  }
-};
+import Image from "next/image";
+import { useParams } from "next/navigation";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -203,16 +156,7 @@ const ProductPage = () => {
 
         {/* Buy Section */}
         <section className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-          <button
-            onClick={() => handleBuyNow(product)}
-            disabled={status !== "AVAILABLE"}
-            className={clsx(
-              "bg-black text-white px-6 py-3 rounded hover:bg-neutral-900 transition w-full md:w-auto hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer",
-              status !== "AVAILABLE" && "opacity-50 !cursor-not-allowed"
-            )}
-          >
-            Buy Now
-          </button>
+          <BuyNowButton product={product} />
           <span className="text-sm text-neutral-500 mt-2 md:mt-0">
             Made to order – allow 2–3 weeks for creation and shipping
           </span>

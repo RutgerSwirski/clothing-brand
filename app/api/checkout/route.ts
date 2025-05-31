@@ -40,7 +40,7 @@ export async function POST(request: Request) {
                 slug: item.slug,
               },
             },
-            unit_amount: item.price * 100, // Convert to cents
+            unit_amount: item.price, // Convert to cents
           },
           quantity: item.quantity,
         })

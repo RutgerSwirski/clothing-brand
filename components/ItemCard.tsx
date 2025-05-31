@@ -10,8 +10,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
+import { BuyNowButton } from "./ui/BuyNowButton";
 
 type ItemCardProps = {
+  id: string;
   name: string;
   description: string;
   images?: string[];
@@ -22,6 +24,7 @@ type ItemCardProps = {
 };
 
 const ItemCard = ({
+  id,
   name,
   description,
   images = [],
@@ -110,12 +113,16 @@ const ItemCard = ({
 
         {/* CTAs */}
         <div className="flex flex-wrap items-center gap-4">
-          <Button
-            className="w-fit text-sm px-5 py-2"
-            disabled={status !== "AVAILABLE"}
-          >
-            Buy Now
-          </Button>
+          <BuyNowButton
+            product={{
+              id,
+              name,
+              price: price || 0,
+              slug: slug || "",
+              status,
+              image: images[0] || "",
+            }}
+          />
 
           <Link href={`/products/${slug}`} passHref>
             <Button variant="secondary" className="w-fit text-sm px-5 py-2">
