@@ -20,6 +20,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useAtom } from "jotai";
+import { Loader2 } from "lucide-react";
 
 // export const metadata = {
 //   title: "Products",
@@ -32,7 +33,7 @@ export default function ProductsPage() {
   const [sortBy, setSortBy] = useAtom(sortByAtom);
   const [search, setSearch] = useAtom(searchAtom);
 
-  const { data: products } = useQuery({
+  const { data: products, isLoading } = useQuery({
     queryKey: ["products", { category, availability, sortBy, search }],
     queryFn: async () => {
       const response = await axios.get("/api/products", {
@@ -46,7 +47,6 @@ export default function ProductsPage() {
 
       return response.data;
     },
-    initialData: [],
   });
 
   const areFiltersApplied = category || availability || sortBy || search;
@@ -150,12 +150,16 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {products.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center mt-20">
+          <Loader2 className="animate-spin text-stone-500" size={32} />
+        </div>
+      ) : products.length === 0 ? (
         <p className="text-center text-stone-500 italic mt-24">
           No products match your filters. Try adjusting them or clearing all.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 my-20">
           {products.map((product) => (
             <ItemCard key={product.id} {...product} />
           ))}

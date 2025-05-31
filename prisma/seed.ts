@@ -1,47 +1,76 @@
 // this is the prisma seeding file
 import { PrismaClient } from "@prisma/client";
+import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
 
-async function main() {
-  await prisma.product.createMany({
-    data: [
-      {
-        name: "Item 1",
-        slug: "item-1",
-        price: 100,
-        description: "This is a description of item 1.",
-        available: true,
-      },
-      {
-        name: "Item 2",
-        slug: "item-2",
-        price: 200,
-        description: "This is a description of item 2.",
-        available: false,
-      },
-      {
-        name: "Item 3",
-        slug: "item-3",
-        price: 300,
-        description: "This is a description of item 3.",
-        comingSoon: true,
-      },
-    ],
-  });
+type Product = {
+  name: string;
+  slug: string;
+  price: number;
+  description: string;
+  isAvailable?: boolean;
+  comingSoon?: boolean;
+  images?: string[];
+  sold: boolean;
+  stock?: number;
+};
 
-  await prisma.tag.createMany({
-    data: [
-      {
-        name: "Tag 1",
-        slug: "tag-1",
+async function main() {
+  await prisma.image.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.product.deleteMany();
+
+  const NUM_PRODUCTS = 100;
+
+  for (let i = 0; i < NUM_PRODUCTS; i++) {
+    const name = faker.commerce.productName();
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    const price = faker.number.float({ min: 10, max: 1000, fractionDigits: 2 });
+    const description = faker.commerce.productDescription();
+    const isAvailable = faker.datatype.boolean();
+    const comingSoon = faker.datatype.boolean();
+    const images = Array.from(
+      { length: faker.number.int({ min: 1, max: 3 }) },
+      () =>
+        faker.image
+          .url({ width: 640, height: 480 })
+          .replace(/^http:\/\//, "https://")
+    );
+    const sold = faker.datatype.boolean();
+    const stock = isAvailable ? faker.number.int({ min: 1, max: 100 }) : 0;
+    const product: Product = {
+      name,
+      slug,
+      price,
+      description,
+      isAvailable,
+      comingSoon,
+      images,
+      sold,
+      stock,
+    };
+
+    await prisma.product.create({
+      data: {
+        name: product.name,
+        slug: product.slug,
+        price: product.price,
+        description: product.description,
+        isAvailable: product.isAvailable,
+        comingSoon: product.comingSoon,
+        sold: product.sold,
+        stock: product.stock,
+        images: {
+          create: product.images?.map((url) => ({ url })) || [],
+        },
       },
-      {
-        name: "Tag 2",
-        slug: "tag-2",
-      },
-    ],
-  });
+    });
+  }
 }
 
 main()

@@ -124,7 +124,7 @@ const ProductPage = () => {
           <span
             className={`text-sm font-medium ${product.available ? "text-green-600" : "text-red-500"}`}
           >
-            {product.available ? "In Stock" : "Sold Out"}
+            {product.stock > 0 ? "In Stock" : "Out of Stock"}
           </span>
         </div>
 

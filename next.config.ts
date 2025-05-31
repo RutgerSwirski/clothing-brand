@@ -5,7 +5,13 @@ const nextConfig: NextConfig = {
 
   // we need to allow images from pexels.com for the lookbook images
   images: {
-    domains: ["images.pexels.com", "images.unsplash.com", "cdn.shopify.com"],
+    domains: [
+      "images.pexels.com",
+      "images.unsplash.com",
+      "cdn.shopify.com",
+      "loremflickr.com",
+      "picsum.photos",
+    ],
   },
 };
 

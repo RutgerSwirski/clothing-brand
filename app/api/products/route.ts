@@ -12,10 +12,10 @@ export async function GET(req: Request) {
   const where = {
     ...(category && category !== "all" ? { category } : {}),
     ...(availability === "in-stock"
-      ? { available: true }
+      ? { stock: { gt: 0 } }
       : availability === "out-of-stock"
-      ? { available: false }
-      : {}),
+        ? { stock: { lte: 0 } }
+        : {}),
     ...(search
       ? {
           name: {
@@ -28,14 +28,17 @@ export async function GET(req: Request) {
 
   const orderBy =
     sortBy === "price-low-to-high"
-      ? { price: "asc" }
+      ? { price: "asc" as const }
       : sortBy === "price-high-to-low"
-      ? { price: "desc" }
-      : { createdAt: "desc" };
+        ? { price: "desc" as const }
+        : { createdAt: "desc" as const };
 
   const products = await prisma.product.findMany({
     where,
     orderBy,
+    include: {
+      images: true,
+    },
   });
 
   return NextResponse.json(products);
