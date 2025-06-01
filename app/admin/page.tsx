@@ -5,6 +5,7 @@ import OrdersList from "@/components/admin/OrdersList";
 import EnquiriesList from "@/components/admin/EnquiriesList";
 import LogoutButton from "@/components/ui/LogoutButton";
 import NewProductForm from "@/components/admin/NewProductForm";
+import ProductsList from "@/components/admin/ProductsList";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -13,13 +14,17 @@ export default async function AdminPage() {
     redirect("/login");
   }
 
-  const [orders, enquiries] = await Promise.all([
+  const [orders, enquiries, products] = await Promise.all([
     prisma.order.findMany({
       orderBy: { createdAt: "desc" },
       include: { items: true },
     }),
     prisma.upcycleEnquiry.findMany({
       orderBy: { createdAt: "desc" },
+    }),
+    prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { images: true },
     }),
   ]);
 
@@ -32,10 +37,7 @@ export default async function AdminPage() {
       <OrdersList orders={orders} />
       <EnquiriesList enquiries={enquiries} />
 
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">Add New Product</h2>
-        <NewProductForm />
-      </div>
+      <ProductsList products={products} />
     </section>
   );
 }
