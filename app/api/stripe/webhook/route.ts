@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const customerAddress = session.customer_details?.address;
+    // const customerAddress = session.customer_details?.address;
 
     // Ensure required metadata exists
     const itemIdsRaw = session.metadata?.itemIds;

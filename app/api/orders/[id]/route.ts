@@ -36,10 +36,13 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PATCH(request: Request, context: any) {
-  const { params } = context;
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const resolvedParams = await params;
 
-  if (!params || !params.id) {
+  if (!resolvedParams || !resolvedParams.id) {
     return NextResponse.json(
       { error: "Order ID is required" },
       { status: 400 }
@@ -51,7 +54,7 @@ export async function PATCH(request: Request, context: any) {
   if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { id } = params;
+  const { id } = resolvedParams;
   const { status } = await request.json();
   if (!status) {
     return NextResponse.json({ error: "Status is required" }, { status: 400 });

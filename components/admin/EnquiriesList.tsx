@@ -1,8 +1,13 @@
 "use client";
 
+import { UpcycleEnquiry } from "@prisma/client";
 import { format } from "date-fns";
 
-export default function EnquiriesList({ enquiries }: { enquiries: any[] }) {
+export default function EnquiriesList({
+  enquiries,
+}: {
+  enquiries: UpcycleEnquiry[];
+}) {
   return (
     <div>
       <h2 className="text-xl font-medium mb-4">Upcycle Enquiries</h2>

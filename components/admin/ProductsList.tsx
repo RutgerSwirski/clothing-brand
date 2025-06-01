@@ -14,13 +14,24 @@ import { Button } from "../ui/button";
 import EditProductModal from "./EditProductModal";
 import NewProductModal from "./NewProductModal";
 import { toast } from "sonner";
+import { Order, Product, Image } from "@prisma/client";
 
-export default function ProductsList({ products }: { products: any[] }) {
-  const [editingProduct, setEditingProduct] = useState<any | null>(null);
+type ProductWithOrdersAndImages = Product & {
+  orders: Order[];
+  images: Image[];
+};
+
+export default function ProductsList({
+  products,
+}: {
+  products: ProductWithOrdersAndImages[];
+}) {
+  const [editingProduct, setEditingProduct] =
+    useState<ProductWithOrdersAndImages | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: ProductWithOrdersAndImages) => {
     setEditingProduct(product);
     setIsModalOpen(true);
   };

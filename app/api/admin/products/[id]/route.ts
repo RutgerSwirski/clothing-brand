@@ -12,7 +12,10 @@ const productSchema = z.object({
 });
 
 // ✅ Correct signature for App Router dynamic routes
-export async function PUT(req: NextRequest, { params }: any) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const session = await auth();
   if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -22,8 +25,10 @@ export async function PUT(req: NextRequest, { params }: any) {
     const body = await req.json();
     const parsed = productSchema.parse(body);
 
+    const resolvedParams = await params;
+
     const product = await prisma.product.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(resolvedParams.id, 10) },
       data: {
         name: parsed.name,
         slug: parsed.name.toLowerCase().replace(/\s+/g, "-"),
@@ -34,7 +39,7 @@ export async function PUT(req: NextRequest, { params }: any) {
     });
 
     return NextResponse.json(product);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating product:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.flatten() }, { status: 400 });
@@ -47,13 +52,18 @@ export async function PUT(req: NextRequest, { params }: any) {
   }
 }
 
-export async function DELETE(req: NextRequest, context: any) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const session = await auth();
   if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const productId = parseInt(context.params.id, 10);
+  const resolvedParams = await params;
+
+  const productId = parseInt(resolvedParams.id, 10);
   if (isNaN(productId)) {
     return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
   }

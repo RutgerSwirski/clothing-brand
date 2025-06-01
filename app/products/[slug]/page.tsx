@@ -74,7 +74,7 @@ const ProductPage = () => {
     returns,
     repairs,
     story = [],
-    behindTheScenesImages = [],
+    // behindTheScenesImages = [],
     details = [],
   } = product || {};
 

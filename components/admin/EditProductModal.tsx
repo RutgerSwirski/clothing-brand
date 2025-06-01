@@ -22,6 +22,7 @@ import {
 import ImageUploader from "./ImageUploader";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { Image as ImageType, Product } from "@prisma/client";
 const schema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
@@ -40,14 +41,8 @@ export default function EditProductModal({
   product,
   onClose,
 }: {
-  product: {
-    id: number;
-    name: string;
-    slug: string;
-    description?: string;
-    price: number;
-    status: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED";
-    images?: { url: string }[];
+  product: Product & {
+    images: ImageType[];
   };
 
   onClose: () => void;
@@ -69,7 +64,7 @@ export default function EditProductModal({
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof schema>) => {
     console.log("Submitting data:", data);
     try {
       const response = await axios.put(

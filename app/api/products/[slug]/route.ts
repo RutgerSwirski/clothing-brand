@@ -1,16 +1,19 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request, context: any) {
-  const { params } = context;
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const resolvedParams = await params;
 
-  if (!params || !params.slug) {
+  if (!resolvedParams || !resolvedParams.slug) {
     return new Response("Product slug is required", { status: 400 });
   }
 
   const product = await prisma.product.findUnique({
     where: {
-      slug: params.slug,
+      slug: resolvedParams.slug,
     },
     include: {
       images: true,
