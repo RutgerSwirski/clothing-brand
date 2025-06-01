@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import EditProductModal from "./EditProductModal";
 import NewProductModal from "./NewProductModal";
+import { toast } from "sonner";
 
 export default function ProductsList({ products }: { products: any[] }) {
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
@@ -30,8 +31,10 @@ export default function ProductsList({ products }: { products: any[] }) {
       await fetch(`/api/admin/products/${productId}`, {
         method: "DELETE",
       });
-      window.location.reload();
+
+      toast.success("Product deleted successfully");
     } catch (err) {
+      toast.error("Failed to delete product");
       console.error("Failed to delete product", err);
     }
   };
@@ -99,6 +102,7 @@ export default function ProductsList({ products }: { products: any[] }) {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEdit(product)}
+                        disabled={product.orders.length > 0}
                       >
                         Edit
                       </Button>
@@ -106,6 +110,7 @@ export default function ProductsList({ products }: { products: any[] }) {
                         variant="destructive"
                         size="sm"
                         onClick={() => handleDelete(product.id)}
+                        disabled={product.orders.length > 0}
                       >
                         Delete
                       </Button>

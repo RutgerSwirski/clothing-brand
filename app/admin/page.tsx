@@ -24,7 +24,7 @@ export default async function AdminPage() {
     }),
     prisma.product.findMany({
       orderBy: { createdAt: "desc" },
-      include: { images: true },
+      include: { images: true, orders: true },
     }),
   ]);
 
