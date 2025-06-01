@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import LogoutButton from "@/components/ui/LogoutButton";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function AdminDashboard() {
   const session = await auth();
@@ -14,7 +13,6 @@ export default async function AdminDashboard() {
     <div className="space-y-12">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <LogoutButton />
       </div>
 
       <ul className="grid gap-6 md:grid-cols-2">
