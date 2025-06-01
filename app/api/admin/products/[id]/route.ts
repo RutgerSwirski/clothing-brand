@@ -1,8 +1,8 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
 import { z } from "zod";
+
 const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
@@ -11,13 +11,9 @@ const productSchema = z.object({
   images: z.array(z.string().url()).min(1, "At least one image is required"),
 });
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+// ✅ Correct signature for App Router dynamic routes
+export async function PUT(req: NextRequest, { params }: any) {
   const session = await auth();
-
-  // Only allow admin
   if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -51,23 +47,18 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, context: any) {
   const session = await auth();
-
   if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const productId = parseInt(params.id, 10);
+  const productId = parseInt(context.params.id, 10);
   if (isNaN(productId)) {
     return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
   }
 
   try {
-    // Find if any orders reference this product
     const relatedOrders = await prisma.order.findMany({
       where: {
         items: {
@@ -84,15 +75,8 @@ export async function DELETE(
       );
     }
 
-    // Optionally delete associated images (not strictly necessary with SQLite FK)
-    await prisma.image.deleteMany({
-      where: { productId },
-    });
-
-    // Safe to delete
-    await prisma.product.delete({
-      where: { id: productId },
-    });
+    await prisma.image.deleteMany({ where: { productId } });
+    await prisma.product.delete({ where: { id: productId } });
 
     return NextResponse.json({ success: true });
   } catch (error) {

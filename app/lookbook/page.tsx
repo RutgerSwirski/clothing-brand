@@ -13,7 +13,15 @@ import {
 } from "@/components/ui/dialog";
 import PageHeader from "@/components/PageHeader";
 
-const lookbookImages = [
+type LookbookImage = {
+  src: string;
+  alt: string;
+  title?: string;
+  description?: string;
+  pieces?: { name: string; slug: string }[];
+};
+
+const lookbookImages: LookbookImage[] = [
   { src: "/lookbook/2.jpg", alt: "Wide trousers in motion" },
   { src: "/lookbook/3.jpg", alt: "Patchwork layering experiment" },
   { src: "/lookbook/4.jpg", alt: "Studio shot – draped tee" },
@@ -83,7 +91,7 @@ export default function LookbookPage() {
                         </DialogDescription>
                       </DialogHeader>
 
-                      {img.pieces?.length > 0 && (
+                      {Array.isArray(img.pieces) && img.pieces.length > 0 && (
                         <div>
                           <h3 className="text-sm font-semibold uppercase tracking-widest mb-2 text-neutral-700">
                             Featured Pieces

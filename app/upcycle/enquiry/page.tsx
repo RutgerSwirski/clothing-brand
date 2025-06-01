@@ -43,7 +43,7 @@ export default function UpcycleOrder() {
     resolver: zodResolver(formSchema),
   });
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: FormValues) => axios.post("/api/upcycle/enquiry", data),
     onSuccess: () => router.push("/upcycle/enquiry/thanks"),
   });
@@ -136,10 +136,10 @@ export default function UpcycleOrder() {
         <div className="pt-6">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             className="w-full tracking-widest uppercase text-sm"
           >
-            {isLoading ? "Sending..." : "Submit Inquiry"}
+            {isPending ? "Sending..." : "Submit Inquiry"}
           </Button>
           <p className="text-xs text-neutral-500 mt-3 text-center italic">
             I’ll get back to you within 2–3 days.

@@ -280,21 +280,28 @@ const ProductPage = () => {
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {details.map((detail, idx) => (
-              <div key={idx} className="flex flex-col items-start gap-2">
-                <Image
-                  src={detail.image}
-                  alt={detail.name}
-                  width={400}
-                  height={300}
-                  className="rounded-lg shadow-sm w-full object-cover"
-                />
-                <h4 className="text-sm font-semibold text-neutral-800">
-                  {detail.name}
-                </h4>
-                <p className="text-xs text-neutral-500">{detail.description}</p>
-              </div>
-            ))}
+            {details.map(
+              (
+                detail: { image: string; name: string; description: string },
+                idx: number
+              ) => (
+                <div key={idx} className="flex flex-col items-start gap-2">
+                  <Image
+                    src={detail.image}
+                    alt={detail.name}
+                    width={400}
+                    height={300}
+                    className="rounded-lg shadow-sm w-full object-cover"
+                  />
+                  <h4 className="text-sm font-semibold text-neutral-800">
+                    {detail.name}
+                  </h4>
+                  <p className="text-xs text-neutral-500">
+                    {detail.description}
+                  </p>
+                </div>
+              )
+            )}
           </div>
         </section>
       </div>

@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { v4 as uuidv4 } from "uuid";
 
 import { NextResponse } from "next/server";
+import { Product } from "@prisma/client";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
 
       metadata: {
         itemIds: body.items
-          .map((item) => `${item.id}:${item.slug}`) // You must include `id` and `slug` in `body.items`
+          .map((item: Product) => `${item.id}:${item.slug}`) // You must include `id` and `slug` in `body.items`
           .join(","),
         orderId: orderId, // Include order ID in metadata
       },

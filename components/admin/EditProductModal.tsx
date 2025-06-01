@@ -85,7 +85,7 @@ export default function EditProductModal({
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose} className="max-w-2xl mx-auto">
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Product</DialogTitle>

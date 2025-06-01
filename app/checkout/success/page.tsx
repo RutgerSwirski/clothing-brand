@@ -1,5 +1,6 @@
 "use client";
 
+import { Product } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Link from "next/link";
@@ -41,9 +42,9 @@ export default function SuccessCheckoutPage() {
         </p>
         <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
         <ul className="list-disc pl-5 mb-6">
-          {order.items.map((item) => (
+          {order.items.map((item: Product) => (
             <li key={item.id} className="mb-2">
-              {item.name} - €{(item.price / 100).toFixed(2)} x {item.quantity}
+              {item.name} - €{(item.price / 100).toFixed(2)}
             </li>
           ))}
         </ul>

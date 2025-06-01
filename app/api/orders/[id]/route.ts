@@ -36,10 +36,16 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: Request, context: any) {
+  const { params } = context;
+
+  if (!params || !params.id) {
+    return NextResponse.json(
+      { error: "Order ID is required" },
+      { status: 400 }
+    );
+  }
+
   const session = await auth();
 
   if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {

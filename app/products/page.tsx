@@ -17,6 +17,7 @@ import {
   searchAtom,
   sortByAtom,
 } from "@/lib/atoms";
+import { Product } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useAtom } from "jotai";
@@ -161,8 +162,13 @@ export default function ProductsPage() {
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 my-20">
-          {products.map((product) => (
-            <ItemCard key={product.id} {...product} />
+          {products.map((product: Product) => (
+            <ItemCard
+              key={product.id}
+              {...product}
+              id={String(product.id)}
+              description={product.description ?? ""}
+            />
           ))}
         </div>
       )}

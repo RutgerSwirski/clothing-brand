@@ -155,12 +155,14 @@ export default function Home() {
             {/* Feature Block 1 */}
             <div className="flex flex-col md:flex-row items-center md:justify-between gap-12">
               <ItemCard
+                id="item-1"
                 name="Item 1"
                 description="Oversized boxy jacket made from two vintage canvas coats, finished with raw hems and topstitched pleats."
                 slug="item-1"
                 featured
               />
               <ItemCard
+                id="item-2"
                 name="Item 2"
                 description="Two-tone hoodie spliced from thrifted knitwear and lined with deconstructed shirting."
                 slug="item-2"
@@ -171,12 +173,14 @@ export default function Home() {
             {/* Feature Block 2 */}
             <div className="flex flex-col md:flex-row-reverse items-center md:justify-between gap-12">
               <ItemCard
+                id="item-3"
                 name="Item 3"
                 description="Wide-leg trousers crafted from old military fatigues, restructured with sculptural pleats."
                 slug="item-3"
                 featured
               />
               <ItemCard
+                id="item-4"
                 name="Item 4"
                 description="Cropped denim jacket made from multiple pairs of jeans — with asymmetrical paneling and reinforced stitching."
                 slug="item-4"
@@ -203,17 +207,17 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <ItemCard
+              id="item-5"
               name="Item 5"
               description="Structured, raw-edged outer layer made from two upcycled work jackets."
               slug="item-5"
-              comingSoon
             />
 
             <ItemCard
+              id="item-6"
               name="Item 6"
               description="Draped top formed from deconstructed knitwear and shirt panels."
               slug="item-6"
-              comingSoon
             />
           </div>
         </div>

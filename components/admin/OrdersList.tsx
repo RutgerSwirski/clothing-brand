@@ -15,17 +15,13 @@ import {
 import axios from "axios";
 import { toast } from "sonner";
 
-interface Order {
-  id: string;
-  email: string;
-  total: number;
+import { Order, Product } from "@prisma/client";
 
-  status: "paid" | "pending" | "failed" | "refunded";
-  items: { name: string }[];
-  createdAt: string;
-}
+type OrderWithItems = Order & {
+  items: Product[];
+};
 
-export default function OrdersList({ orders }: { orders: Order[] }) {
+export default function OrdersList({ orders }: { orders: OrderWithItems[] }) {
   const [updating, setUpdating] = useState<string | null>(null);
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
