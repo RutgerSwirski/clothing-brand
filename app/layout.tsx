@@ -39,12 +39,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ReactQueryProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased ${inter.variable} ${spaceGrotesk.variable}`}
-        >
-          <NextAuthProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased ${inter.variable} ${spaceGrotesk.variable}`}
+      >
+        <NextAuthProvider>
+          <ReactQueryProvider>
             <div className="flex flex-col min-h-screen">
               <Toaster position="top-center" />
               <Navbar />
@@ -91,9 +91,9 @@ export default function RootLayout({
                 </div>
               </footer>
             </div>
-          </NextAuthProvider>
-        </body>
-      </html>
-    </ReactQueryProvider>
+          </ReactQueryProvider>
+        </NextAuthProvider>
+      </body>
+    </html>
   );
 }

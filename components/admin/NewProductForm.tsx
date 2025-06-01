@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectItem,
 } from "../ui/select";
+import { useQueryClient } from "@tanstack/react-query";
 
 const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -35,7 +36,8 @@ const productSchema = z.object({
 
 type ProductFormValues = z.infer<typeof productSchema>;
 
-export default function NewProductForm() {
+export default function NewProductForm({ onClose }: { onClose: () => void }) {
+  const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -62,8 +64,12 @@ export default function NewProductForm() {
     try {
       await axios.post("/api/products", data);
       toast.success("Product created");
+      queryClient.invalidateQueries({ queryKey: ["products"] }); // Invalidate products cache
       // Reset form after successful submission
       reset();
+
+      // close
+      onClose();
     } catch (err) {
       toast.error("Failed to create product");
       console.error(err);

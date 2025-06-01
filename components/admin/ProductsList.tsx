@@ -113,7 +113,7 @@ export default function ProductsList({
                         variant="outline"
                         size="sm"
                         onClick={() => handleEdit(product)}
-                        disabled={product.orders.length > 0}
+                        disabled={product?.orders?.length > 0}
                       >
                         Edit
                       </Button>
@@ -121,7 +121,7 @@ export default function ProductsList({
                         variant="destructive"
                         size="sm"
                         onClick={() => handleDelete(product.id)}
-                        disabled={product.orders.length > 0}
+                        disabled={product?.orders?.length > 0}
                       >
                         Delete
                       </Button>

@@ -23,6 +23,8 @@ import ImageUploader from "./ImageUploader";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { Image as ImageType, Product } from "@prisma/client";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 const schema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
@@ -47,6 +49,8 @@ export default function EditProductModal({
 
   onClose: () => void;
 }) {
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -72,10 +76,14 @@ export default function EditProductModal({
         data
       );
       console.log("Product updated successfully:", response.data);
+      //
+      toast.success("Product updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["products"] }); // Invalidate the products query to refresh the list
       onClose(); // Close the modal after successful update
     } catch (error) {
       console.error("Failed to update product:", error);
       alert("Failed to update product. Please try again.");
+      toast.error("Failed to update product");
     }
   };
 
@@ -162,13 +170,6 @@ export default function EditProductModal({
 
           <Button type="submit" className="w-full">
             Update Product
-          </Button>
-
-          <Button
-            type="button"
-            onClick={handleSubmit((data) => console.log(data))}
-          >
-            Debug Form
           </Button>
         </form>
       </DialogContent>

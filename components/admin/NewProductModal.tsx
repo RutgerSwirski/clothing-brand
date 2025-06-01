@@ -21,7 +21,7 @@ export default function NewProductModal({
         <DialogHeader>
           <DialogTitle>Create New Product</DialogTitle>
         </DialogHeader>
-        <NewProductForm />
+        <NewProductForm onClose={onClose} />
       </DialogContent>
     </Dialog>
   );
