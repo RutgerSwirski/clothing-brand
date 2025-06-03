@@ -10,20 +10,22 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+// import {
+//   Accordion,
+//   AccordionContent,
+//   AccordionItem,
+//   AccordionTrigger,
+// } from "@/components/ui/accordion";
 
 export default async function ProductPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
+
   const product = await prisma.product.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       //  details: true,
       images: true,
@@ -38,21 +40,21 @@ export default async function ProductPage({
     price,
     name,
     description,
-    fit,
-    fitDetails,
-    size,
-    modelSize,
-    modelHeight,
-    modelChestSize,
-    modelWaistSize,
-    fabric,
-    care,
-    shipping,
-    customization,
-    returns,
-    repairs,
-    story = [],
-    details = [],
+    // fit,
+    // fitDetails,
+    // size,
+    // modelSize,
+    // modelHeight,
+    // modelChestSize,
+    // modelWaistSize,
+    // fabric,
+    // care,
+    // shipping,
+    // customization,
+    // returns,
+    // repairs,
+    // story,
+    // details,
   } = product;
 
   return (
@@ -127,7 +129,7 @@ export default async function ProductPage({
         </section>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <h3 className="text-sm font-semibold uppercase text-stone-700 tracking-wider">
               The Size
             </h3>
@@ -140,9 +142,9 @@ export default async function ProductPage({
               <li>Chest: {modelChestSize || "36"} (91 cm)</li>
               <li>Waist: {modelWaistSize || "28"} (71 cm)</li>
             </ul>
-          </div>
+          </div> */}
 
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <h3 className="text-sm font-semibold uppercase text-stone-700 tracking-wider">
               The Fit
             </h3>
@@ -154,10 +156,10 @@ export default async function ProductPage({
               {fitDetails ||
                 "The piece drapes beautifully on all body types, with a boxy silhouette that flatters."}
             </p>
-          </div>
+          </div> */}
         </section>
 
-        <Accordion
+        {/* <Accordion
           type="single"
           collapsible
           className="w-full divide-y divide-stone-200"
@@ -198,9 +200,9 @@ export default async function ProductPage({
               </AccordionItem>
             );
           })}
-        </Accordion>
+        </Accordion> */}
 
-        {story && (
+        {/* {story && (
           <section className="space-y-4 pt-8 border-t">
             <h3 className="text-base font-heading font-bold uppercase tracking-wider">
               Behind the Piece
@@ -217,9 +219,9 @@ export default async function ProductPage({
               </p>
             )}
           </section>
-        )}
+        )} */}
 
-        <section className="space-y-4 pt-8 border-t">
+        {/* <section className="space-y-4 pt-8 border-t">
           <h3 className="text-base font-heading font-bold uppercase tracking-wider">
             Construction & Details
           </h3>
@@ -240,7 +242,7 @@ export default async function ProductPage({
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
       </div>
     </section>
   );

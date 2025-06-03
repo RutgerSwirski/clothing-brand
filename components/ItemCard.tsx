@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import clsx from "clsx";
-
+import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
@@ -9,44 +9,37 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Image from "next/image";
 import { BuyNowButton } from "./ui/BuyNowButton";
+import type { Image as ImageType } from "@prisma/client";
+import type { FC } from "react";
 
-type ItemCardProps = {
-  id: string;
+interface ItemCardProps {
+  id: number | string; // Allow both number and string for flexibility
   name: string;
-  description: string;
-  images?: string[];
-  slug?: string;
-  featured?: boolean;
-  status?: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED";
+  slug: string;
+  description?: string | null;
   price?: number;
-};
+  status: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED";
+  images?: (ImageType | string)[];
+}
 
-const ItemCard = ({
+const ItemCard: FC<ItemCardProps> = ({
   id,
   name,
-  description,
-  images = [],
   slug,
-  status = "AVAILABLE",
-  featured = false,
+  description,
   price,
-}: ItemCardProps) => {
+  status,
+  images = [],
+}) => {
   return (
     <div
       className={clsx(
-        "flex flex-col md:flex-row w-full border border-stone-200 rounded-2xl overflow-hidden font-body bg-white transition-all duration-300 group",
-        {
-          "md:hover:scale-[1.01] md:hover:shadow-lg": !featured,
-          "md:hover:scale-[1.02] md:hover:shadow-xl": featured,
-        }
+        "flex flex-col md:flex-row w-full border border-stone-200 rounded-2xl overflow-hidden font-body bg-white transition-all duration-300 group"
       )}
     >
-      {/* Image section */}
       <div className="w-full md:w-1/2 relative bg-stone-100 border-b md:border-b-0 md:border-r border-stone-200">
         <div className="aspect-[4/5] md:aspect-auto w-full h-full relative">
-          {/* Badges on top of image */}
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
             {status === "COMING_SOON" && (
               <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
@@ -67,7 +60,7 @@ const ItemCard = ({
 
           <Carousel opts={{ loop: true }} className="w-full h-full">
             <CarouselContent className="w-full h-full">
-              {images.map((image: { url: string } | string, index) => (
+              {images.map((image, index) => (
                 <CarouselItem key={index} className="w-full h-full">
                   <div className="relative w-full aspect-[4/5]">
                     <Image
@@ -87,7 +80,6 @@ const ItemCard = ({
         </div>
       </div>
 
-      {/* Content */}
       <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between gap-6">
         <div>
           <Link href={`/products/${slug}`} passHref>
@@ -95,35 +87,35 @@ const ItemCard = ({
               {name}
             </h2>
           </Link>
-          {/* Description */}
           <p className="text-sm md:text-base text-neutral-700 leading-relaxed tracking-wide">
             {description}
           </p>
-
-          {/* Status */}
           <p className="text-sm md:text-base text-neutral-700 leading-relaxed tracking-wide">
             Status: {status}
           </p>
-
-          {/* price */}
           <p className="text-lg md:text-xl font-semibold text-black mt-2">
             {price ? `$${price.toFixed(2)}` : "Price not available"}
           </p>
         </div>
 
-        {/* CTAs */}
         <div className="flex flex-wrap items-center gap-4">
           <BuyNowButton
             product={{
-              id,
+              id: Number(id), // 👈 converts string to number
               name,
-              price: price || 0,
-              slug: slug || "",
+              slug,
               status,
-              image: images[0] || "",
+              price: price ?? 0,
+              description: description ?? "",
+              createdAt: new Date(), // Placeholder, replace with actual value if available
+              updatedAt: new Date(), // Placeholder, replace with actual value if available
+              images: Array.isArray(images)
+                ? images.filter(
+                    (img): img is ImageType => typeof img !== "string"
+                  )
+                : [],
             }}
           />
-
           <Link href={`/products/${slug}`} passHref>
             <Button variant="secondary" className="w-fit text-sm px-5 py-2">
               View

@@ -19,17 +19,19 @@ export const revalidate = 3600; // Revalidate once per hour (ISR)
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     category?: string | null;
     availability?: string | null;
     sortBy?: string | null;
     search?: string;
-  };
+  }>;
 }) {
-  const rawCategory = searchParams.category || "all";
-  const rawAvailability = searchParams.availability || "all";
-  const sortBy = searchParams.sortBy || "createdAt";
-  const search = searchParams.search || "";
+  const searchParamsObj = await searchParams;
+
+  const rawCategory = searchParamsObj.category || "all";
+  const rawAvailability = searchParamsObj.availability || "all";
+  const sortBy = searchParamsObj.sortBy || "createdAt";
+  const search = searchParamsObj.search || "";
 
   const category = rawCategory !== "all" ? rawCategory : null;
   const availability = rawAvailability !== "all" ? rawAvailability : null;
@@ -178,12 +180,7 @@ export default async function ProductsPage({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 my-20">
           {products.map((product) => (
-            <ItemCard
-              key={product.id}
-              {...product}
-              id={String(product.id)}
-              description={product.description ?? ""}
-            />
+            <ItemCard key={product.id} {...product} />
           ))}
         </div>
       )}

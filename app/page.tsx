@@ -155,18 +155,18 @@ export default function Home() {
             {/* Feature Block 1 */}
             <div className="flex flex-col md:flex-row items-center md:justify-between gap-12">
               <ItemCard
+                status="AVAILABLE"
                 id="item-1"
                 name="Item 1"
                 description="Oversized boxy jacket made from two vintage canvas coats, finished with raw hems and topstitched pleats."
                 slug="item-1"
-                featured
               />
               <ItemCard
+                status="AVAILABLE"
                 id="item-2"
                 name="Item 2"
                 description="Two-tone hoodie spliced from thrifted knitwear and lined with deconstructed shirting."
                 slug="item-2"
-                featured
               />
             </div>
 
@@ -177,14 +177,14 @@ export default function Home() {
                 name="Item 3"
                 description="Wide-leg trousers crafted from old military fatigues, restructured with sculptural pleats."
                 slug="item-3"
-                featured
+                status="COMING_SOON"
               />
               <ItemCard
                 id="item-4"
                 name="Item 4"
                 description="Cropped denim jacket made from multiple pairs of jeans — with asymmetrical paneling and reinforced stitching."
                 slug="item-4"
-                featured
+                status="SOLD"
               />
             </div>
           </div>
@@ -211,6 +211,7 @@ export default function Home() {
               name="Item 5"
               description="Structured, raw-edged outer layer made from two upcycled work jackets."
               slug="item-5"
+              status="COMING_SOON"
             />
 
             <ItemCard
@@ -218,6 +219,7 @@ export default function Home() {
               name="Item 6"
               description="Draped top formed from deconstructed knitwear and shirt panels."
               slug="item-6"
+              status="COMING_SOON"
             />
           </div>
         </div>

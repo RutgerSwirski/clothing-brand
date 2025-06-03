@@ -3,22 +3,16 @@
 import { loadStripe } from "@stripe/stripe-js";
 import clsx from "clsx";
 import axios from "axios";
+import type { Product, Image as ImageType } from "@prisma/client";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
 );
 
-type Product = {
-  name: string;
-  price: number;
-  image: string;
-  id: string;
-  slug: string;
-  status: "AVAILABLE" | "SOLD" | "COMING_SOON" | "ARCHIVED";
-};
-
 type BuyNowButtonProps = {
-  product: Product;
+  product: Product & {
+    images: ImageType[];
+  };
 };
 
 export function BuyNowButton({ product }: BuyNowButtonProps) {
@@ -39,12 +33,18 @@ export function BuyNowButton({ product }: BuyNowButtonProps) {
       const response = await axios.post("/api/checkout", {
         items: [
           {
-            name: product.name,
-            price: Math.round(product.price * 100), // ✅ converts 599.99 to 59999
-            image: product.image,
-            quantity: 1,
             id: product.id,
             slug: product.slug,
+            name: product.name,
+            price: Math.round(product.price * 100), // price in cents
+            image: product.images?.[0]?.url ?? "",
+            description: product.description ?? "",
+            currency: "eur",
+            metadata: {
+              productId: product.id,
+              productSlug: product.slug,
+            },
+            quantity: 1,
           },
         ],
       });
