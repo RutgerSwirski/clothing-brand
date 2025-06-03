@@ -1,24 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import axios from "axios";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { toast } from "sonner";
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     try {
       const res = await axios.post("/api/newsletter", { email });
       if (res.status === 200) {
-        alert("Thank you for subscribing!");
+        toast.success("Thanks for subscribing!");
         setEmail("");
       }
-    } catch (error) {
-      console.error("Error subscribing to newsletter:", error);
-      alert("There was an error subscribing. Please try again later.");
+    } catch (err) {
+      console.error("Subscription error:", err);
+      toast.error("Something went wrong. Try again.");
     }
   };
 
@@ -35,7 +36,6 @@ const NewsletterForm = () => {
         required
         className="w-full md:w-1/2 px-5 py-3 rounded-md text-black bg-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-white"
       />
-
       <Button
         type="submit"
         disabled={!email}
