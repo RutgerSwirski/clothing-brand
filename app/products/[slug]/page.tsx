@@ -1,58 +1,36 @@
-"use client";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"; // shadcn
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import clsx from "clsx";
 import { BuyNowButton } from "@/components/ui/BuyNowButton";
-
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"; // shadcn
+} from "@/components/ui/carousel";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import clsx from "clsx";
-import Image from "next/image";
-import { useParams } from "next/navigation";
-
-const ProductPage = () => {
-  const { slug } = useParams();
-
-  const {
-    data: product,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["product", slug],
-    queryFn: async () => {
-      const res = await axios.get(`/api/products/${slug}`);
-      return res.data;
+export default async function ProductPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const product = await prisma.product.findUnique({
+    where: { slug: params.slug },
+    include: {
+      //  details: true,
+      images: true,
     },
-    enabled: !!slug,
   });
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-neutral-500">
-        Loading ..
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-red-600">
-        Failed to load
-      </div>
-    );
-  }
+  if (!product) notFound();
 
   const {
     status,
@@ -74,26 +52,15 @@ const ProductPage = () => {
     returns,
     repairs,
     story = [],
-    // behindTheScenesImages = [],
     details = [],
-  } = product || {};
-
-  if (!product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-neutral-500">
-        Product not found
-      </div>
-    );
-  }
+  } = product;
 
   return (
     <section className="flex flex-col md:flex-row min-h-screen bg-white text-black mt-16">
-      {/* Left: Image or carousel */}
-
       <div className="w-full md:w-1/2 md:sticky md:top-12 md:h-screen border-r border-black/10 h-[80vh]">
         <Carousel opts={{ loop: true }} className="w-full h-full">
           <CarouselContent className="h-full">
-            {images.map((img: { url: string }, idx: number) => (
+            {images.map((img, idx) => (
               <CarouselItem
                 key={idx}
                 className="w-full md:h-screen h-[80vh] relative"
@@ -115,9 +82,7 @@ const ProductPage = () => {
         </Carousel>
       </div>
 
-      {/* Right: Scrollable Details */}
       <div className="w-full md:w-1/2 p-8 space-y-12 font-body pb-32">
-        {/* Title + Meta */}
         <header className="space-y-4">
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-3xl md:text-5xl font-heading font-bold tracking-tight">
@@ -154,7 +119,6 @@ const ProductPage = () => {
           </div>
         </header>
 
-        {/* Buy Section */}
         <section className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <BuyNowButton product={product} />
           <span className="text-sm text-neutral-500 mt-2 md:mt-0">
@@ -162,7 +126,6 @@ const ProductPage = () => {
           </span>
         </section>
 
-        {/* Sizing & Fit Info */}
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           <div className="space-y-1">
             <h3 className="text-sm font-semibold uppercase text-stone-700 tracking-wider">
@@ -194,71 +157,54 @@ const ProductPage = () => {
           </div>
         </section>
 
-        {/* Info Accordion */}
         <Accordion
           type="single"
           collapsible
           className="w-full divide-y divide-stone-200"
         >
           {[
-            {
-              value: "fabric",
-              label: "The Fabric",
-              content:
+            "fabric",
+            "care",
+            "shipping",
+            "customization",
+            "returns",
+            "repairs",
+          ].map((key) => {
+            const contentMap = {
+              fabric:
                 fabric ||
                 "Made from 100% organic cotton, pre-washed for softness and durability.",
-            },
-            {
-              value: "care",
-              label: "Care Instructions",
-              content:
+              care:
                 care || "Cold wash by hand. Hang dry. Iron on low if needed.",
-            },
-            {
-              value: "shipping",
-              label: "Shipping & Returns",
-              content:
+              shipping:
                 shipping ||
                 "Ships worldwide within 3–5 business days. Free shipping on orders over $100.",
-            },
-            {
-              value: "customization",
-              label: "Customization Options",
-              content:
+              customization:
                 customization ||
                 "Custom sizes available upon request. Please contact me for details.",
-            },
-            {
-              value: "returns",
-              label: "Returns & Exchanges",
-              content:
+              returns:
                 returns ||
                 "All sales are final due to the one-of-a-kind nature of each piece. Please review measurements and details carefully before purchasing.",
-            },
-            {
-              value: "repairs",
-              label: "Repairs & Upkeep",
-              content:
+              repairs:
                 repairs ||
                 "I offer free lifetime repairs for all pieces. Just send it back and I’ll fix any issues.",
-            },
-          ].map(({ value, label, content }) => (
-            <AccordionItem key={value} value={value}>
-              <AccordionTrigger className="text-sm uppercase tracking-widest text-stone-700 hover:text-black font-medium">
-                {label}
-              </AccordionTrigger>
-              <AccordionContent>{content}</AccordionContent>
-            </AccordionItem>
-          ))}
+            };
+            return (
+              <AccordionItem key={key} value={key}>
+                <AccordionTrigger className="text-sm uppercase tracking-widest text-stone-700 hover:text-black font-medium">
+                  {key.charAt(0).toUpperCase() + key.slice(1).replace("_", " ")}
+                </AccordionTrigger>
+                <AccordionContent>{contentMap[key]}</AccordionContent>
+              </AccordionItem>
+            );
+          })}
         </Accordion>
 
-        {/* The Story */}
-        {(story?.length || story) && (
+        {story && (
           <section className="space-y-4 pt-8 border-t">
             <h3 className="text-base font-heading font-bold uppercase tracking-wider">
               Behind the Piece
             </h3>
-
             {Array.isArray(story) ? (
               <ul className="list-disc list-inside space-y-2 text-sm text-neutral-600 leading-relaxed">
                 {story.map((line, i) => (
@@ -273,40 +219,29 @@ const ProductPage = () => {
           </section>
         )}
 
-        {/* The Details */}
         <section className="space-y-4 pt-8 border-t">
           <h3 className="text-base font-heading font-bold uppercase tracking-wider">
             Construction & Details
           </h3>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {details.map(
-              (
-                detail: { image: string; name: string; description: string },
-                idx: number
-              ) => (
-                <div key={idx} className="flex flex-col items-start gap-2">
-                  <Image
-                    src={detail.image}
-                    alt={detail.name}
-                    width={400}
-                    height={300}
-                    className="rounded-lg shadow-sm w-full object-cover"
-                  />
-                  <h4 className="text-sm font-semibold text-neutral-800">
-                    {detail.name}
-                  </h4>
-                  <p className="text-xs text-neutral-500">
-                    {detail.description}
-                  </p>
-                </div>
-              )
-            )}
+            {details.map((detail, idx) => (
+              <div key={idx} className="flex flex-col items-start gap-2">
+                <Image
+                  src={detail.image}
+                  alt={detail.name}
+                  width={400}
+                  height={300}
+                  className="rounded-lg shadow-sm w-full object-cover"
+                />
+                <h4 className="text-sm font-semibold text-neutral-800">
+                  {detail.name}
+                </h4>
+                <p className="text-xs text-neutral-500">{detail.description}</p>
+              </div>
+            ))}
           </div>
         </section>
       </div>
     </section>
   );
-};
-
-export default ProductPage;
+}
