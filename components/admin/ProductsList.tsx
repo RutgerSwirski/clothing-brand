@@ -15,6 +15,7 @@ import EditProductModal from "./EditProductModal";
 import NewProductModal from "./NewProductModal";
 import { toast } from "sonner";
 import { Order, Product, Image } from "@prisma/client";
+import axios from "axios";
 
 type ProductWithOrdersAndImages = Product & {
   orders: Order[];
@@ -22,10 +23,12 @@ type ProductWithOrdersAndImages = Product & {
 };
 
 export default function ProductsList({
-  products,
+  initialProducts,
 }: {
-  products: ProductWithOrdersAndImages[];
+  initialProducts: ProductWithOrdersAndImages[];
 }) {
+  const [products, setProducts] =
+    useState<ProductWithOrdersAndImages[]>(initialProducts);
   const [editingProduct, setEditingProduct] =
     useState<ProductWithOrdersAndImages | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,12 +39,18 @@ export default function ProductsList({
     setIsModalOpen(true);
   };
 
+  const refresh = async () => {
+    const res = await axios.get<ProductWithOrdersAndImages[]>("/api/products");
+    const fresh = res.data;
+    setProducts(fresh);
+  };
+
   const handleDelete = async (productId: number) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
     try {
-      await fetch(`/api/admin/products/${productId}`, {
-        method: "DELETE",
-      });
+      await axios.delete(`/api/admin/products/${productId}`);
+
+      await refresh(); // Refresh the product list after deletion
 
       toast.success("Product deleted successfully");
     } catch (err) {
@@ -144,7 +153,10 @@ export default function ProductsList({
       {isCreating && (
         <NewProductModal
           open={isCreating}
-          onClose={() => setIsCreating(false)}
+          onClose={() => {
+            setIsCreating(false);
+            refresh(); // refresh after product creation
+          }}
         />
       )}
     </>
