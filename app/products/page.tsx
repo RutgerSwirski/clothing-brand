@@ -55,14 +55,10 @@ export default async function ProductsPage({
     (search && search.trim() !== "");
 
   const products = await prisma.product.findMany({
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      price: true,
-      description: true,
-      status: true,
+    include: {
+      images: true,
     },
+
     where: {
       ...(category && { category }),
       ...(status && { status }),

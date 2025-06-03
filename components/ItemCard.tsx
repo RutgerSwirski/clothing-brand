@@ -20,7 +20,7 @@ interface ItemCardProps {
   description?: string | null;
   price?: number;
   status: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED";
-  images?: (ImageType | string)[];
+  images?: ImageType[];
 }
 
 const ItemCard: FC<ItemCardProps> = ({
@@ -64,7 +64,7 @@ const ItemCard: FC<ItemCardProps> = ({
                 <CarouselItem key={index} className="w-full h-full">
                   <div className="relative w-full aspect-[4/5]">
                     <Image
-                      src={typeof image === "string" ? image : image.url}
+                      src={image.url}
                       alt={`Image of ${name}`}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
