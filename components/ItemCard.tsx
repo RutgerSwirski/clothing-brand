@@ -34,6 +34,7 @@ const ItemCard: FC<ItemCardProps> = ({
 }) => {
   return (
     <div
+      data-testid="item-card"
       className={clsx(
         "flex flex-col md:flex-row w-full border border-stone-200 rounded-2xl overflow-hidden font-body bg-white transition-all duration-300 group"
       )}
