@@ -12,6 +12,7 @@ import {
 import { BuyNowButton } from "./ui/BuyNowButton";
 import type { Image as ImageType } from "@prisma/client";
 import type { FC } from "react";
+import { ViewProductButton } from "./ui/ViewProductButton";
 
 interface ItemCardProps {
   id: number | string; // Allow both number and string for flexibility
@@ -116,11 +117,7 @@ const ItemCard: FC<ItemCardProps> = ({
                 : [],
             }}
           />
-          <Link href={`/products/${slug}`} passHref>
-            <Button variant="secondary" className="w-fit text-sm px-5 py-2">
-              View
-            </Button>
-          </Link>
+          <ViewProductButton slug={slug} />
         </div>
       </div>
     </div>
