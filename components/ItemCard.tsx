@@ -1,7 +1,3 @@
-import Link from "next/link";
-import { Button } from "./ui/button";
-import clsx from "clsx";
-import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
@@ -9,9 +5,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { BuyNowButton } from "./ui/BuyNowButton";
 import type { Image as ImageType } from "@prisma/client";
+import clsx from "clsx";
+import Image from "next/image";
+import Link from "next/link";
 import type { FC } from "react";
+import { BuyNowButton } from "./ui/BuyNowButton";
+import { ViewProductButton } from "./ui/ViewProductButton";
 
 interface ItemCardProps {
   id: number | string; // Allow both number and string for flexibility
@@ -117,11 +117,7 @@ const ItemCard: FC<ItemCardProps> = ({
                 : [],
             }}
           />
-          <Link href={`/products/${slug}`} passHref>
-            <Button variant="secondary" className="w-fit text-sm px-5 py-2">
-              View
-            </Button>
-          </Link>
+          <ViewProductButton slug={slug} />
         </div>
       </div>
     </div>
