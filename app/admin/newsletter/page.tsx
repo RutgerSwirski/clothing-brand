@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { DeleteNewsletterSubscriptionButton } from "@/components/admin/DeleteNewsletterSubscriptionButton";
 
 export default async function AdminNewsletterPage() {
   const session = await auth();
@@ -33,10 +34,13 @@ export default async function AdminNewsletterPage() {
         <ul className="divide-y divide-stone-300 bg-white rounded-lg shadow border border-stone-200">
           {subscribers.map((s) => (
             <li key={s.id} className="p-4 flex justify-between items-center">
-              <span className="text-sm">{s.email}</span>
-              <span className="text-xs text-stone-500">
-                {new Date(s.createdAt).toLocaleDateString()}
-              </span>
+              <div>
+                <span className="text-sm">{s.email}</span>
+                <div className="text-xs text-stone-500">
+                  {new Date(s.createdAt).toLocaleDateString()}
+                </div>
+              </div>
+              <DeleteNewsletterSubscriptionButton id={s.id} />
             </li>
           ))}
         </ul>
