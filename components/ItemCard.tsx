@@ -1,7 +1,3 @@
-import Link from "next/link";
-import { Button } from "./ui/button";
-import clsx from "clsx";
-import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
@@ -9,9 +5,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { BuyNowButton } from "./ui/BuyNowButton";
 import type { Image as ImageType } from "@prisma/client";
+import clsx from "clsx";
+import Image from "next/image";
+import Link from "next/link";
 import type { FC } from "react";
+import { BuyNowButton } from "./ui/BuyNowButton";
 import { ViewProductButton } from "./ui/ViewProductButton";
 
 interface ItemCardProps {
