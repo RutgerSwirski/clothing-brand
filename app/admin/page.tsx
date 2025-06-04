@@ -47,6 +47,17 @@ export default async function AdminDashboard() {
             </p>
           </Link>
         </li>
+        <li>
+          <Link
+            href="/admin/newsletter"
+            className="block p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-md hover:bg-stone-50 transition"
+          >
+            <h2 className="text-xl font-semibold mb-1">📧 Newsletter</h2>
+            <p className="text-sm text-stone-600">
+              Manage newsletter subscribers
+            </p>
+          </Link>
+        </li>
       </ul>
     </div>
   );
