@@ -7,6 +7,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import NextAuthProvider from "@/components/providers/NextAuthProvider";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Geist({
   variable: "--font-body",
@@ -93,6 +95,8 @@ export default function RootLayout({
             </div>
           </ReactQueryProvider>
         </NextAuthProvider>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

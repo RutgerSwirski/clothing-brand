@@ -31,111 +31,124 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Webhook Error" }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const sessionId = (event.data.object as Stripe.Checkout.Session).id;
-
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-    if (!session) {
-      console.error("❌ Session not found for ID:", sessionId);
-      return NextResponse.json({ error: "Session not found" }, { status: 404 });
-    }
-
-    const customerEmail = session.customer_details?.email;
-
-    if (!customerEmail) {
-      console.error("❌ No customer email found in session");
-      return NextResponse.json(
-        { error: "Missing customer email" },
-        { status: 400 }
-      );
-    }
-
-    // const customerAddress = session.customer_details?.address;
-
-    // Ensure required metadata exists
-    const itemIdsRaw = session.metadata?.itemIds;
-    const orderId = session.metadata?.orderId;
-
-    if (!itemIdsRaw) {
-      console.error("❌ No itemIds in metadata");
-      return NextResponse.json({ error: "Missing itemIds" }, { status: 400 });
-    }
-
-    const itemIds = itemIdsRaw.split(",");
-
-    try {
-      await prisma.order.create({
-        data: {
-          id: orderId,
-          email: customerEmail,
-          stripeSessionId: session.id,
-          total: session.amount_total ?? 0,
-          status: "paid",
-          items: {
-            connect: itemIds.map((item) => {
-              const [id, slug] = item.split(":");
-              return { id: Number(id), slug };
-            }),
-          },
-        },
-      });
-
-      // we need to update the product stock
-      await Promise.all(
-        itemIds.map(async (item) => {
-          const [id, slug] = item.split(":");
-          const product = await prisma.product.findUnique({
-            where: { id: Number(id), slug },
-          });
-          if (product) {
-            await prisma.product.update({
-              where: { id: product.id },
-              data: {
-                status: "SOLD",
-              },
-            });
-          } else {
-            console.error(`❌ Product not found for ID: ${id}, Slug: ${slug}`);
-          }
-        })
-      );
-
-      // we also need to send an email to the customer
-      try {
-        await resend.emails.send({
-          from: "Studio Remade <orders@studioremade.studio>",
-          to: customerEmail,
-          subject: "Your Order Confirmation",
-          html: `<p>Thank you for your order! Your order ID is <strong>${orderId}</strong>.</p>
-          <p>We will process your order shortly and send you a confirmation email once it is shipped.</p>`,
-        });
-      } catch (emailError) {
-        console.error("❌ Failed to send confirmation email:", emailError);
-        return NextResponse.json(
-          { error: "Failed to send confirmation email" },
-          { status: 500 }
-        );
-      }
-    } catch (error) {
-      console.error("❌ Error creating order:", error);
-      return NextResponse.json({ error: "Database Error" }, { status: 500 });
-    }
-    try {
-      // Send confirmation email logic here
-      // This is a placeholder, implement your email sending logic
-      console.log(`📧 Sending confirmation email to ${customerEmail}`);
-      // await sendConfirmationEmail(customerEmail, orderId);
-
-      console.log("✅ Confirmation email sent successfully");
-      // You can implement your email sending logic here
-    } catch (err) {
-      console.error("❌ Failed to create order:", err);
-      return NextResponse.json({ error: "Database Error" }, { status: 500 });
-    }
-
+  if (event.type !== "checkout.session.completed") {
     return NextResponse.json({ received: true }, { status: 200 });
   }
 
-  return NextResponse.json({ received: true }, { status: 200 });
+  const sessionId = (event.data.object as Stripe.Checkout.Session).id;
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+  if (!session) {
+    console.error("❌ Session not found for ID:", sessionId);
+    return NextResponse.json({ error: "Session not found" }, { status: 404 });
+  }
+
+  const customerEmail = session.customer_details?.email;
+  if (!customerEmail) {
+    console.error("❌ No customer email found in session");
+    return NextResponse.json(
+      { error: "Missing customer email" },
+      { status: 400 }
+    );
+  }
+
+  const itemIdsRaw = session.metadata?.itemIds;
+  const orderId = session.metadata?.orderId;
+
+  if (!itemIdsRaw) {
+    console.error("❌ No itemIds in metadata");
+    return NextResponse.json({ error: "Missing itemIds" }, { status: 400 });
+  }
+
+  const parsedItems = itemIdsRaw.split(",").map((item) => {
+    const [id, slug] = item.split(":");
+    return { id: Number(id), slug };
+  });
+
+  const products = await prisma.product.findMany({
+    where: {
+      OR: parsedItems.map((p) => ({ id: p.id, slug: p.slug })),
+    },
+    include: { images: true },
+  });
+
+  const productHtml = products
+    .map(
+      (product) => `
+    <div style="margin-bottom: 24px;">
+      <h3 style="margin: 0; font-size: 16px;">${product.name}</h3>
+      ${product.images[0]?.url ? `<img src="${product.images[0].url}" alt="${product.name}" style="width: 120px; height: auto; margin-top: 8px; border-radius: 8px;" />` : ""}
+      <p style="margin: 4px 0 0;">€${product.price.toFixed(2)}</p>
+    </div>
+  `
+    )
+    .join("");
+
+  try {
+    await prisma.order.create({
+      data: {
+        id: orderId,
+        email: customerEmail,
+        stripeSessionId: session.id,
+        total: session.amount_total ?? 0,
+        status: "paid",
+        items: {
+          connect: parsedItems,
+        },
+      },
+    });
+
+    await Promise.all(
+      parsedItems.map(async ({ id, slug }) => {
+        const product = await prisma.product.findUnique({
+          where: { id, slug },
+        });
+        if (product) {
+          await prisma.product.update({
+            where: { id: product.id },
+            data: { status: "SOLD" },
+          });
+        } else {
+          console.error(`❌ Product not found for ID: ${id}, Slug: ${slug}`);
+        }
+      })
+    );
+
+    await resend.emails.send({
+      from: "Studio Remade <orders@studioremade.studio>",
+      to: customerEmail,
+      subject: "Your Order Confirmation",
+      html: `
+        <div style="font-family: sans-serif; padding: 24px; background-color: #fafafa;">
+          <h2 style="margin-bottom: 12px;">Thank you for your order!</h2>
+          <p>Your order ID is <strong>${orderId}</strong>.</p>
+          <h3 style="margin-top: 32px; font-size: 18px;">Order Summary</h3>
+          ${productHtml}
+          <p style="margin-top: 32px;">We’ll process your order shortly and send you another email when it’s shipped.</p>
+          <p style="font-size: 12px; color: #888; margin-top: 40px;">Studio Remade</p>
+        </div>
+      `,
+    });
+
+    await resend.emails.send({
+      from: "Studio Remade <orders@studioremade.studio>",
+      to: process.env.ADMIN_EMAIL ?? "fallback@studioremade.studio",
+      subject: `🛒 New Order: ${orderId}`,
+      html: `
+        <p><strong>New order received</strong></p>
+        <p><strong>Order ID:</strong> ${orderId}</p>
+        <p><strong>Customer:</strong> ${customerEmail}</p>
+        <p><strong>Stripe Session ID:</strong> ${session.id}</p>
+        <p><strong>Total:</strong> €${(session.amount_total ?? 0) / 100}</p>
+      `,
+    });
+
+    return NextResponse.json({ received: true }, { status: 200 });
+  } catch (error) {
+    console.error("❌ Error processing order:", error);
+    return NextResponse.json(
+      { error: "Database or email error" },
+      { status: 500 }
+    );
+  }
 }
