@@ -1,10 +1,26 @@
 import ItemCard from "@/components/ItemCard";
 import NewsletterForm from "@/components/newsletter/NewsletterForm";
 import { Button } from "@/components/ui/button";
+import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+  // we need to fetch features products
+
+  const featuredProducts = await prisma.product.findMany({
+    where: {
+      featured: true,
+    },
+    include: {
+      images: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 4,
+  });
+
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
@@ -136,7 +152,7 @@ export default function Home() {
       </section>
 
       <section className="py-32 px-6 md:px-24 bg-stone-200 text-black font-body">
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto">
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-center tracking-tight mb-6">
             Featured Pieces
           </h2>
@@ -151,9 +167,15 @@ export default function Home() {
             Click to uncover their transformation.
           </p>
 
-          <div className="space-y-24">
-            {/* Feature Block 1 */}
-            <div className="flex flex-col md:flex-row items-center md:justify-between gap-12">
+          {/* Featured Products */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 my-20">
+            {featuredProducts.map((product) => (
+              <ItemCard key={product.id} {...product} />
+            ))}
+          </div>
+
+          {/* Feature Block 1 */}
+          {/* <div className="flex flex-col md:flex-row items-center md:justify-between gap-12">
               <ItemCard
                 status="AVAILABLE"
                 id="item-1"
@@ -168,10 +190,10 @@ export default function Home() {
                 description="Two-tone hoodie spliced from thrifted knitwear and lined with deconstructed shirting."
                 slug="item-2"
               />
-            </div>
+            </div> */}
 
-            {/* Feature Block 2 */}
-            <div className="flex flex-col md:flex-row-reverse items-center md:justify-between gap-12">
+          {/* Feature Block 2 */}
+          {/* <div className="flex flex-col md:flex-row-reverse items-center md:justify-between gap-12">
               <ItemCard
                 id="item-3"
                 name="Item 3"
@@ -186,8 +208,7 @@ export default function Home() {
                 slug="item-4"
                 status="SOLD"
               />
-            </div>
-          </div>
+            </div> */}
         </div>
       </section>
 

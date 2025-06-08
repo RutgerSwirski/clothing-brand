@@ -9,6 +9,7 @@ const productSchema = z.object({
   price: z.coerce.number().gt(0, "Price must be greater than zero"),
   status: z.enum(["AVAILABLE", "COMING_SOON", "SOLD", "ARCHIVED"]),
   images: z.array(z.string().url()).min(1, "At least one image is required"),
+  featured: z.boolean().optional(),
 });
 
 // ✅ Correct signature for App Router dynamic routes
@@ -35,6 +36,7 @@ export async function PUT(
         description: parsed.description,
         price: parsed.price,
         status: parsed.status,
+        featured: parsed.featured,
       },
     });
 

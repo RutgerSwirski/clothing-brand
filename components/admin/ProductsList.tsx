@@ -85,6 +85,9 @@ export default function ProductsList({
               <TableHead className="w-1/4 font-semibold text-stone-700">
                 Status
               </TableHead>
+              <TableHead className="w-[120px] font-semibold text-stone-700">
+                Featured
+              </TableHead>
               <TableHead className="w-[120px] font-semibold text-stone-700 text-center">
                 Actions
               </TableHead>
@@ -107,6 +110,7 @@ export default function ProductsList({
                   <TableCell className="truncate">{product.slug}</TableCell>
                   <TableCell>€{product.price.toFixed(2)}</TableCell>
                   <TableCell>{product.status}</TableCell>
+                  <TableCell>{product.featured ? "Yes" : "No"}</TableCell>
                   <TableCell>
                     <div className="flex justify-center gap-2">
                       <Button
