@@ -30,6 +30,7 @@ const schema = z.object({
   slug: z.string().min(1),
   description: z.string().optional(),
   price: z.coerce.number().gt(0),
+  featured: z.boolean().optional(),
   status: z.enum(["AVAILABLE", "COMING_SOON", "SOLD", "ARCHIVED"]),
   images: z
     .array(z.string().url())
@@ -65,6 +66,7 @@ export default function EditProductModal({
       price: product.price,
       status: product.status,
       images: product.images?.map((img) => img.url) || [],
+      featured: product.featured || false,
     },
   });
 
@@ -89,7 +91,10 @@ export default function EditProductModal({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent
+        // scrolling
+        className="overflow-y-scroll max-h-[90vh] max-w-2xl sm:max-w-2xl"
+      >
         <DialogHeader>
           <DialogTitle>Edit Product</DialogTitle>
         </DialogHeader>
@@ -106,6 +111,23 @@ export default function EditProductModal({
           {errors.description && (
             <p className="text-red-500 text-sm">{errors.description.message}</p>
           )}
+
+          <Controller
+            control={control}
+            name="featured"
+            render={({ field }) => (
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  className="h-4 w-4"
+                />
+                <label>Featured</label>
+              </div>
+            )}
+          />
+
           <Input type="number" placeholder="Price" {...register("price")} />
           {errors.price && (
             <p className="text-red-500 text-sm">{errors.price.message}</p>
