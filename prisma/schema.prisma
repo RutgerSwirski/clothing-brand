@@ -29,6 +29,7 @@ model Product {
   images      Image[]
   status      ProductStatus @default(AVAILABLE)
   orders      Order[]       @relation("OrderItems")
+  featured    Boolean       @default(false)
 }
 
 enum OrderStatus {
