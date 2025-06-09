@@ -10,7 +10,8 @@ const stripePromise = loadStripe(
 );
 
 type BuyNowButtonProps = {
-  product: Product & {
+  product: Omit<Product, "featured"> & {
+    featured?: boolean; // now optional
     images: ImageType[];
   };
 };

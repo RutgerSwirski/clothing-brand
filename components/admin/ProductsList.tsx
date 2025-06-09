@@ -79,7 +79,7 @@ export default function ProductsList({
               <TableHead className="w-1/4 font-semibold text-stone-700">
                 Slug
               </TableHead>
-              <TableHead className="w-1/4 font-semibold text-stone-700">
+              <TableHead className="w-1/4 font-semibold text-stone-700">7
                 Price
               </TableHead>
               <TableHead className="w-1/4 font-semibold text-stone-700">
