@@ -31,7 +31,13 @@ const schema = z.object({
   description: z.string().optional(),
   price: z.coerce.number().gt(0),
   featured: z.boolean().optional(),
-  status: z.enum(["AVAILABLE", "COMING_SOON", "SOLD", "ARCHIVED"]),
+  status: z.enum([
+    "AVAILABLE",
+    "COMING_SOON",
+    "SOLD",
+    "ARCHIVED",
+    "IN_PROGRESS",
+  ]),
   images: z
     .array(z.string().url())
     .min(1, "At least one image is required")
@@ -146,6 +152,7 @@ export default function EditProductModal({
                     <SelectItem value="COMING_SOON">Coming Soon</SelectItem>
                     <SelectItem value="SOLD">Sold</SelectItem>
                     <SelectItem value="ARCHIVED">Archived</SelectItem>
+                    <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

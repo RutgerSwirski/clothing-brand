@@ -21,6 +21,19 @@ export default async function Home() {
     take: 4,
   });
 
+  const inTheWorks = await prisma.product.findMany({
+    where: {
+      status: "IN_PROGRESS",
+    },
+    include: {
+      images: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 2,
+  });
+
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
@@ -226,22 +239,10 @@ export default async function Home() {
             ready to wear. Keep an eye out.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <ItemCard
-              id="item-5"
-              name="Item 5"
-              description="Structured, raw-edged outer layer made from two upcycled work jackets."
-              slug="item-5"
-              status="COMING_SOON"
-            />
-
-            <ItemCard
-              id="item-6"
-              name="Item 6"
-              description="Draped top formed from deconstructed knitwear and shirt panels."
-              slug="item-6"
-              status="COMING_SOON"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
+            {inTheWorks.map((product) => (
+              <ItemCard key={product.id} {...product} />
+            ))}
           </div>
         </div>
       </section>
