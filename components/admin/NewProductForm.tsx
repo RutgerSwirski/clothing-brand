@@ -8,7 +8,6 @@ import axios from "axios";
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import ImageUploader from "@/components/admin/ImageUploader";
 import {
@@ -20,6 +19,9 @@ import {
   SelectItem,
 } from "../ui/select";
 import { useQueryClient } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -108,7 +110,24 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
         <label className="text-sm font-medium text-stone-700">
           Description
         </label>
-        <Textarea rows={4} {...register("description")} />
+
+        <Controller
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <MDEditor
+              value={field.value}
+              onChange={field.onChange}
+              className="w-full"
+              data-color-mode="light"
+              data-dark-theme="dark"
+              data-light-theme="light"
+              height={200}
+              preview="edit"
+            />
+          )}
+        />
+
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}

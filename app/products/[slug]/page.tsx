@@ -10,6 +10,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { MarkdownContent } from "@/components/ui/MarkdownContent";
+import { statusMap } from "@/lib/statusMap";
 // import {
 //   Accordion,
 //   AccordionContent,
@@ -86,32 +88,29 @@ export default async function ProductPage({
 
       <div className="w-full md:w-1/2 p-8 space-y-12 font-body pb-32">
         <header className="space-y-4">
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <h1 className="text-3xl md:text-5xl font-heading font-bold tracking-tight">
               {name}
             </h1>
-            {status !== "AVAILABLE" && (
-              <span
-                className={clsx(
-                  "px-2 py-1 text-xs font-medium uppercase tracking-wider rounded",
-                  status === "SOLD" && "bg-red-100 text-red-700",
-                  status === "COMING_SOON" && "bg-yellow-100 text-yellow-700",
-                  status === "ARCHIVED" && "bg-stone-200 text-stone-500"
-                )}
-              >
-                {status.replace("_", " ").toLowerCase()}
-              </span>
-            )}
+            <span
+              className={clsx(
+                "px-2 py-1 text-xs font-medium uppercase tracking-wider rounded",
+                status === "SOLD" && "bg-red-100 text-red-700",
+                status === "COMING_SOON" && "bg-yellow-100 text-yellow-700",
+                status === "ARCHIVED" && "bg-stone-200 text-stone-500",
+                status === "IN_PROGRESS" && "bg-blue-100 text-blue-700",
+                status === "AVAILABLE" && "bg-green-100 text-green-700"
+              )}
+            >
+              {statusMap[status]}
+            </span>
           </div>
 
           <p className="text-sm uppercase tracking-widest text-stone-400">
             One-of-a-kind · Handcrafted · Signed
           </p>
 
-          <p className="text-base text-neutral-700 leading-relaxed">
-            {description ||
-              "This piece is a rework of existing materials, made slowly and intentionally. Its shape, texture, and flaws are all part of the story."}
-          </p>
+          <MarkdownContent content={description ?? undefined} />
 
           <div className="flex items-center gap-4 mt-2">
             <p className="text-2xl font-bold">${price}</p>
