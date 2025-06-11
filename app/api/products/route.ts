@@ -9,7 +9,13 @@ const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
   price: z.coerce.number().gt(0, "Price must be greater than zero"),
-  status: z.enum(["AVAILABLE", "COMING_SOON", "SOLD", "ARCHIVED"]),
+  status: z.enum([
+    "AVAILABLE",
+    "COMING_SOON",
+    "SOLD",
+    "ARCHIVED",
+    "IN_PROGRESS",
+  ]),
   images: z.array(z.string().url()).min(1, "At least one image is required"),
 });
 
@@ -20,6 +26,9 @@ export async function GET(req: Request) {
   const availability = searchParams.get("availability");
   const sortBy = searchParams.get("sortBy");
   const search = searchParams.get("search") || "";
+
+  console.log("Availability:", availability);
+
   const where = {
     ...(category && category !== "all" ? { category } : {}),
     ...(availability === "available"
@@ -30,7 +39,9 @@ export async function GET(req: Request) {
           ? { status: "SOLD" as ProductStatus }
           : availability === "archived"
             ? { status: "ARCHIVED" as ProductStatus }
-            : {}), // No filter if "all" or not specified
+            : availability === "in-progress"
+              ? { status: "IN_PROGRESS" as ProductStatus }
+              : {}), // No filter if "all"
 
     ...(search
       ? {

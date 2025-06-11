@@ -25,6 +25,10 @@ import Image from "next/image";
 import { Image as ImageType, Product } from "@prisma/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
+
 const schema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1),
@@ -113,7 +117,23 @@ export default function EditProductModal({
           {errors.slug && (
             <p className="text-red-500 text-sm">{errors.slug.message}</p>
           )}
-          <Input placeholder="Description" {...register("description")} />
+          <Controller
+            control={control}
+            name="description"
+            render={({ field }) => (
+              <MDEditor
+                value={field.value}
+                onChange={field.onChange}
+                className="w-full"
+                data-color-mode="light"
+                data-dark-theme="dark"
+                data-light-theme="light"
+                height={200}
+                preview="edit"
+              />
+            )}
+          />
+
           {errors.description && (
             <p className="text-red-500 text-sm">{errors.description.message}</p>
           )}

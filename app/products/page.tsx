@@ -41,6 +41,7 @@ export default async function ProductsPage({
     sold: ProductStatus.SOLD,
     "coming-soon": ProductStatus.COMING_SOON,
     archived: ProductStatus.ARCHIVED,
+    "in-progress": ProductStatus.IN_PROGRESS,
   };
 
   const status = availability ? statusMap[availability] : undefined;
@@ -131,6 +132,7 @@ export default async function ProductsPage({
                   <SelectItem value="sold">Sold</SelectItem>
                   <SelectItem value="coming-soon">Coming Soon</SelectItem>
                   <SelectItem value="archived">Archived</SelectItem>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

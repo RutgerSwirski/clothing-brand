@@ -12,12 +12,14 @@ import Link from "next/link";
 import type { FC } from "react";
 import { BuyNowButton } from "./ui/BuyNowButton";
 import { ViewProductButton } from "./ui/ViewProductButton";
+import { MarkdownContent } from "./ui/MarkdownContent";
+import { statusMap } from "@/lib/statusMap";
 
 interface ItemCardProps {
   id: number | string; // Allow both number and string for flexibility
   name: string;
   slug: string;
-  description?: string | null;
+  description?: string;
   price?: number;
   status: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED" | "IN_PROGRESS";
   images?: ImageType[];
@@ -42,21 +44,18 @@ const ItemCard: FC<ItemCardProps> = ({
       <div className="w-full md:w-1/2 relative bg-stone-100 border-b md:border-b-0 md:border-r border-stone-200">
         <div className="aspect-[4/5] md:aspect-auto w-full h-full relative">
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-            {status === "COMING_SOON" && (
-              <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
-                Coming Soon
-              </span>
-            )}
-            {status === "SOLD" && (
-              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                Sold
-              </span>
-            )}
-            {status === "ARCHIVED" && (
-              <span className="bg-gray-500 text-white text-xs px-2 py-1 rounded-full">
-                Archived
-              </span>
-            )}
+            <span
+              className={clsx(
+                "px-2 py-1 text-xs font-medium uppercase tracking-wider rounded",
+                status === "SOLD" && "bg-red-100 text-red-700",
+                status === "COMING_SOON" && "bg-yellow-100 text-yellow-700",
+                status === "ARCHIVED" && "bg-stone-200 text-stone-500",
+                status === "IN_PROGRESS" && "bg-blue-100 text-blue-700",
+                status === "AVAILABLE" && "bg-green-100 text-green-700"
+              )}
+            >
+              {statusMap[status]}
+            </span>
           </div>
 
           <Carousel opts={{ loop: true }} className="w-full h-full">
@@ -88,12 +87,9 @@ const ItemCard: FC<ItemCardProps> = ({
               {name}
             </h2>
           </Link>
-          <p className="text-sm md:text-base text-neutral-700 leading-relaxed tracking-wide">
-            {description}
-          </p>
-          <p className="text-sm md:text-base text-neutral-700 leading-relaxed tracking-wide">
-            Status: {status}
-          </p>
+
+          <MarkdownContent content={description} />
+
           <p className="text-lg md:text-xl font-semibold text-black mt-2">
             {price ? `$${price.toFixed(2)}` : "Price not available"}
           </p>
