@@ -183,7 +183,11 @@ export default async function Home() {
           {/* Featured Products */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 my-20">
             {featuredProducts.map((product) => (
-              <ItemCard key={product.id} {...product} />
+              <ItemCard
+                key={product.id}
+                {...product}
+                description={product.description ?? undefined}
+              />
             ))}
           </div>
 
@@ -241,7 +245,11 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
             {inTheWorks.map((product) => (
-              <ItemCard key={product.id} {...product} />
+              <ItemCard
+                key={product.id}
+                {...product}
+                description={product.description ?? undefined}
+              />
             ))}
           </div>
         </div>

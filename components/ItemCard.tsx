@@ -29,7 +29,7 @@ const ItemCard: FC<ItemCardProps> = ({
   id,
   name,
   slug,
-  description,
+  description = "",
   price,
   status,
   images = [],
