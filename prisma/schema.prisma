@@ -16,6 +16,7 @@ enum ProductStatus {
   SOLD
   COMING_SOON
   ARCHIVED
+  IN_PROGRESS
 }
 
 model Product {

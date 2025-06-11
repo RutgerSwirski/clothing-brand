@@ -19,7 +19,7 @@ interface ItemCardProps {
   slug: string;
   description?: string | null;
   price?: number;
-  status: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED";
+  status: "AVAILABLE" | "COMING_SOON" | "SOLD" | "ARCHIVED" | "IN_PROGRESS";
   images?: ImageType[];
 }
 

@@ -7,7 +7,7 @@ const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
   price: z.coerce.number().gt(0, "Price must be greater than zero"),
-  status: z.enum(["AVAILABLE", "COMING_SOON", "SOLD", "ARCHIVED"]),
+  status: z.enum(["AVAILABLE", "COMING_SOON", "SOLD", "ARCHIVED", "IN_PROGRESS"]),
   images: z.array(z.string().url()).min(1, "At least one image is required"),
   featured: z.boolean().optional(),
 });
