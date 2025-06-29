@@ -48,11 +48,13 @@ export default async function Home() {
 
         <video
           className="absolute top-0 left-0 w-full h-full object-cover"
-          src="/videos/VHSPlaceholder.mp4"
+          src="/videos/VHSPlaceholderOptimized.mp4"
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
+          poster="/images/VHSPoster.jpg"
         />
 
         {/* Overlay (darkens image slightly) */}
