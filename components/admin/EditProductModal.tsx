@@ -121,6 +121,7 @@ export default function EditProductModal({
     // we need to delete the image from the cloudinary server here
 
     try {
+      toast.loading("Deleting image...");
       await axios.delete(`/api/admin/products/${product.id}/images`, {
         data: { url }, // <-- you're sending it in the body, not as a route param
       });
@@ -223,6 +224,7 @@ export default function EditProductModal({
             render={({ field }) => (
               <>
                 <ImageUploader
+                  productId={String(product.id)}
                   onUpload={(urls) => field.onChange([...field.value, ...urls])}
                 />
                 <div className="flex flex-wrap gap-2 mt-2">

@@ -7,8 +7,10 @@ import { Progress } from "@/components/ui/progress"; // assume you have a Progre
 
 export default function ImageUploader({
   onUpload,
+  productId,
 }: {
   onUpload: (urls: string[]) => void;
+  productId?: string; // optional, if you want to associate uploads with a specific product
 }) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -27,6 +29,7 @@ export default function ImageUploader({
       for (const file of files) {
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("productId", productId || ""); // associate with product if needed
 
         const res = await axios.post("/api/upload", formData, {
           headers: {

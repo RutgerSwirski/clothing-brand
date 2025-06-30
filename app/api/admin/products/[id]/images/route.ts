@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { cloudinary } from "@/lib/cloudinary";
+import { prisma } from "@/lib/prisma";
 
 const getPublicIdFromUrl = (encodedUrl: string) => {
   try {
@@ -43,6 +44,23 @@ export async function DELETE(req: Request) {
 
   try {
     await cloudinary.uploader.destroy(publicId);
+
+    // we need to delete the single image from the prisma database here
+    const image = await prisma.image.findFirst({
+      where: {
+        url: imageUrl,
+      },
+    });
+
+    if (!image) {
+      return NextResponse.json({ error: "Image not found" }, { status: 404 });
+    }
+
+    await prisma.image.delete({
+      where: {
+        id: image.id,
+      },
+    });
 
     return NextResponse.json(
       { message: "Image deleted successfully" },
