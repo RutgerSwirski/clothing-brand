@@ -1,44 +1,42 @@
-// components/admin/ImageUploader.tsx
 "use client";
 
 import axios from "axios";
-import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { Progress } from "@/components/ui/progress"; // assume you have a Progress component
 
 export default function ImageUploader({
   onUpload,
-  onRemoveImage,
 }: {
   onUpload: (urls: string[]) => void;
-  onRemoveImage?: (url: string) => void;
 }) {
   const [uploading, setUploading] = useState(false);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [progress, setProgress] = useState(0);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
 
     setUploading(true);
-    const uploadedUrls: string[] = [];
+    setProgress(0);
+    toast.loading("Uploading images...");
 
     try {
-      for (const file of files) {
-        // show thumbnail preview
-        const reader = new FileReader();
-        reader.onload = () => {
-          setPreviews((prev) => [...prev, reader.result as string]);
-        };
-        reader.readAsDataURL(file);
+      const uploadedUrls: string[] = [];
 
+      for (const file of files) {
         const formData = new FormData();
         formData.append("file", file);
 
         const res = await axios.post("/api/upload", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (event) => {
+            if (event.total) {
+              const percent = Math.round((event.loaded * 100) / event.total);
+              setProgress(percent);
+            }
           },
         });
 
@@ -50,20 +48,16 @@ export default function ImageUploader({
 
       onUpload(uploadedUrls);
       toast.success("Images uploaded successfully");
+      setProgress(100); // Set to 100% after all uploads complete
+      // remove toast loading state
+      toast.dismiss();
     } catch (err) {
       console.error(err);
       toast.error("Upload failed");
     } finally {
       setUploading(false);
+      setProgress(0);
     }
-  };
-
-  const handleRemoveImage = (url: string) => {
-    setPreviews((prev) => prev.filter((src) => src !== url));
-    if (onRemoveImage) {
-      onRemoveImage(url);
-    }
-    toast.success("Image removed successfully");
   };
 
   return (
@@ -78,30 +72,10 @@ export default function ImageUploader({
         disabled={uploading}
       />
 
-      {previews.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-2">
-          {previews.map((src, i) => (
-            <div
-              key={i}
-              className="relative w-48 h-32 overflow-hidden border rounded"
-            >
-              <Image
-                src={src}
-                alt={`Preview ${i + 1}`}
-                width={600}
-                height={400}
-                className="object-cover rounded"
-              />
-              <Button
-                className="absolute top-2 right-2 bg-red-500 text-white"
-                variant="destructive"
-                onClick={() => handleRemoveImage(src)}
-                disabled={uploading}
-              >
-                Remove
-              </Button>
-            </div>
-          ))}
+      {uploading && (
+        <div className="mt-2">
+          <Progress value={progress} />
+          <p className="text-sm text-stone-600 mt-1">{progress}%</p>
         </div>
       )}
     </div>

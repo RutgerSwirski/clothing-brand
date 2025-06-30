@@ -26,6 +26,7 @@ import { Image as ImageType, Product } from "@prisma/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
+import type { ControllerRenderProps } from "react-hook-form";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -81,13 +82,8 @@ export default function EditProductModal({
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log("Submitting data:", data);
     try {
-      const response = await axios.put(
-        `/api/admin/products/${product.id}`,
-        data
-      );
-      console.log("Product updated successfully:", response.data);
+      await axios.put(`/api/admin/products/${product.id}`, data);
       //
       toast.success("Product updated successfully");
       queryClient.invalidateQueries({ queryKey: ["products"] }); // Invalidate the products query to refresh the list
@@ -96,6 +92,46 @@ export default function EditProductModal({
       console.error("Failed to update product:", error);
       alert("Failed to update product. Please try again.");
       toast.error("Failed to update product");
+    }
+  };
+
+  const handleDeleteImage = async ({
+    field,
+    url,
+  }: {
+    field: ControllerRenderProps<
+      {
+        name: string;
+        slug: string;
+        description?: string | undefined;
+        price: number;
+        featured?: boolean | undefined;
+        status:
+          | "AVAILABLE"
+          | "COMING_SOON"
+          | "SOLD"
+          | "ARCHIVED"
+          | "IN_PROGRESS";
+        images: string[];
+      },
+      "images"
+    >;
+    url: string;
+  }) => {
+    // we need to delete the image from the cloudinary server here
+
+    try {
+      await axios.delete(`/api/admin/products/${product.id}/images`, {
+        data: { url }, // <-- you're sending it in the body, not as a route param
+      });
+
+      // Remove the image URL from the field value
+      field.onChange(field.value.filter((u: string) => u !== url));
+      toast.success("Image deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    } catch (error) {
+      console.error("Failed to delete image:", error);
+      toast.error("Failed to delete image");
     }
   };
 
@@ -201,12 +237,8 @@ export default function EditProductModal({
                       />
                       <button
                         type="button"
-                        onClick={() =>
-                          field.onChange(
-                            field.value.filter((u: string) => u !== url)
-                          )
-                        }
-                        className="absolute top-1 right-1 bg-white text-red-600 rounded-full px-2 py-1 text-xs hidden group-hover:block"
+                        onClick={() => handleDeleteImage({ field, url })}
+                        className="absolute top-1 right-1 bg-white text-red-600 rounded-full px-2 py-1 text-xs hidden group-hover:block cursor-pointer"
                       >
                         ×
                       </button>
