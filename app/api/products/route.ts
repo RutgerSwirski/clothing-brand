@@ -16,7 +16,14 @@ const productSchema = z.object({
     "ARCHIVED",
     "IN_PROGRESS",
   ]),
-  images: z.array(z.string().url()).min(1, "At least one image is required"),
+  images: z
+    .array(
+      z.object({
+        url: z.string().url(),
+        order: z.number().int().nonnegative(),
+      })
+    )
+    .min(1, "At least one image is required"),
 });
 
 export async function GET(req: Request) {
@@ -94,7 +101,10 @@ export async function POST(req: NextRequest) {
         status: parsed.status,
         images: {
           createMany: {
-            data: parsed.images.map((url) => ({ url })),
+            data: parsed.images.map((img) => ({
+              url: img.url,
+              order: img.order,
+            })),
           },
         },
       },

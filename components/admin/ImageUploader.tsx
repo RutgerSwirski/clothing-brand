@@ -26,10 +26,13 @@ export default function ImageUploader({
     try {
       const uploadedUrls: string[] = [];
 
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("productId", productId || ""); // associate with product if needed
+        formData.append("order", String(i)); // 👈 Add image order
 
         const res = await axios.post("/api/upload", formData, {
           headers: {

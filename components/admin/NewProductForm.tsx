@@ -85,12 +85,6 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
     setValue("images", [...current, ...urls], { shouldValidate: true });
   };
 
-  const handleImageDelete = (url: string) => {
-    const current = getValues("images");
-    const updated = current.filter((image) => image !== url);
-    setValue("images", updated, { shouldValidate: true });
-  };
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit, (errors) => {
@@ -173,10 +167,7 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
       </div>
 
       <div>
-        <ImageUploader
-          onUpload={handleImageUpload}
-          onRemoveImage={handleImageDelete}
-        />
+        <ImageUploader onUpload={handleImageUpload} />
 
         {errors.images && (
           <p className="text-sm text-red-500">{errors.images.message}</p>

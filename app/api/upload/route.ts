@@ -7,9 +7,21 @@ import { UploadApiResponse } from "cloudinary";
 export async function POST(request: Request) {
   const formData = await request.formData();
   const file = formData.get("file") as File;
+  const productIdStr = formData.get("productId") as string | null;
+  const orderStr = formData.get("order") as string | null;
 
   if (!file) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+  }
+
+  const productId = productIdStr ? Number(productIdStr) : undefined;
+  const order = orderStr ? Number(orderStr) : 0;
+
+  if (typeof productId !== "number" || isNaN(productId)) {
+    return NextResponse.json(
+      { error: "Invalid or missing productId" },
+      { status: 400 }
+    );
   }
 
   const arrayBuffer = await file.arrayBuffer();
@@ -27,22 +39,11 @@ export async function POST(request: Request) {
         .end(buffer);
     })) as UploadApiResponse;
 
-    // get productId from the form data
-    const productIdStr = formData.get("productId") as string | null;
-    const productId = productIdStr ? Number(productIdStr) : undefined;
-
-    if (typeof productId !== "number" || isNaN(productId)) {
-      return NextResponse.json(
-        { error: "Invalid or missing productId" },
-        { status: 400 }
-      );
-    }
-
-    // we need to create new Images in the database here
     await prisma.image.create({
       data: {
         url: uploadResult.secure_url,
         productId,
+        order,
       },
     });
 
