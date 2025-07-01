@@ -5,6 +5,13 @@ import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 
+export const dynamic = "force-static";
+export const revalidate = 60; // revalidates at most every 60s
+export const metadata = {
+  title: "Studio Remade",
+  description: "Nothing New. Everything Remade.",
+};
+
 export default async function Home() {
   // we need to fetch features products
 

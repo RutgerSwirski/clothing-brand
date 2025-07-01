@@ -19,6 +19,9 @@ import { statusMap } from "@/lib/statusMap";
 //   AccordionTrigger,
 // } from "@/components/ui/accordion";
 
+export const dynamic = "force-static";
+export const revalidate = 60; // revalidate every 60 seconds
+
 export default async function ProductPage({
   params,
 }: {
