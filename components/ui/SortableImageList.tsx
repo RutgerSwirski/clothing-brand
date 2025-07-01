@@ -21,6 +21,7 @@ import { useState, useEffect } from "react";
 type SortableImage = {
   url: string;
   order: number;
+  id?: number; // Optional ID for the image, can be used as a unique identifier
 };
 
 export default function SortableImageList({
@@ -43,18 +44,28 @@ export default function SortableImageList({
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = localImages.findIndex((i) => i.url === active.id);
-    const newIndex = localImages.findIndex((i) => i.url === over.id);
+    const oldIndex = localImages.findIndex(
+      (i) => String(i.id ?? i.url) === active.id
+    );
+    const newIndex = localImages.findIndex(
+      (i) => String(i.id ?? i.url) === over.id
+    );
+
     const reordered = arrayMove(localImages, oldIndex, newIndex).map(
-      (img, i) => ({ ...img, order: i })
+      (img, i) => ({
+        ...img,
+        order: i,
+      })
     );
 
     setLocalImages(reordered);
     onChange(reordered);
   };
 
-  const handleRemove = (url: string) => {
-    const filtered = localImages.filter((img) => img.url !== url);
+  const handleRemove = (idOrUrl: string | number) => {
+    const filtered = localImages.filter(
+      (img) => (img.id ?? img.url) !== idOrUrl
+    );
     const reindexed = filtered.map((img, i) => ({ ...img, order: i }));
     setLocalImages(reindexed);
     onChange(reindexed);
@@ -67,16 +78,16 @@ export default function SortableImageList({
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={localImages.map((img) => img.url)}
+        items={localImages.map((img) => String(img.id ?? img.url))} // unique fallback
         strategy={verticalListSortingStrategy}
       >
         <div className="flex flex-col gap-3">
           {localImages.map((img) => (
             <SortableImageCard
-              key={img.url}
-              id={img.url}
+              key={img.id ?? img.url}
+              id={String(img.id ?? img.url)}
               url={img.url}
-              onDelete={() => handleRemove(img.url)}
+              onDelete={() => handleRemove(img.id ?? img.url)}
             />
           ))}
         </div>
@@ -106,11 +117,11 @@ function SortableImageCard({
     <div
       ref={setNodeRef}
       style={style}
-      className="relative w-full h-48 border rounded overflow-hidden flex items-center justify-center bg-muted"
+      className="relative w-full h-96 border rounded overflow-hidden flex items-center justify-center bg-muted"
       {...attributes}
       {...listeners}
     >
-      <Image src={url} alt="uploaded image" fill className="object-cover" />
+      <Image src={url} alt={`Image ${id}`} fill className="object-cover" />
       <Button
         variant="destructive"
         size="sm"

@@ -46,6 +46,7 @@ const schema = z.object({
   // images include url and order
   images: z
     .object({
+      id: z.number().int().optional(), // Optional for new images
       url: z.string().url(),
       order: z.number(),
     })
@@ -66,7 +67,6 @@ export default function EditProductModal({
 
   onClose: () => void;
 }) {
-  console.log("EditProductModal product:", product);
   const queryClient = useQueryClient();
 
   const {
@@ -82,9 +82,10 @@ export default function EditProductModal({
       description: product.description || "",
       price: product.price,
       status: product.status,
-      images: product.images.map((img, idx) => ({
+      images: product.images.map((img) => ({
+        id: img.id,
         url: img.url,
-        order: idx,
+        order: img.order,
       })),
       featured: product.featured || false,
     },
@@ -241,7 +242,9 @@ export default function EditProductModal({
                 />
                 <SortableImageList
                   images={field.value}
-                  onChange={(reindexed) => field.onChange(reindexed)}
+                  onChange={(reindexed) => {
+                    field.onChange(reindexed);
+                  }}
                 />
               </>
             )}

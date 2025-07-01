@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import type { ProductStatus } from "@prisma/client";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { id_ID } from "@faker-js/faker";
+import type { ProductStatus } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { NextRequest } from "next/server";
 
 const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -17,13 +17,16 @@ const productSchema = z.object({
     "IN_PROGRESS",
   ]),
   images: z
-    .array(
-      z.object({
-        url: z.string().url(),
-        order: z.number().int().nonnegative(),
-      })
-    )
-    .min(1, "At least one image is required"),
+    .object({
+      id: z.number().int("Image ID must be an integer").optional(),
+      url: z.string().url("Invalid URL format"),
+      order: z.number().int("Order must be an integer").nonnegative(),
+    })
+    .array()
+    .min(1, "At least one image is required")
+    .refine((images) => images.every((img) => img.url.startsWith("http")), {
+      message: "All images must be valid URLs",
+    }),
 });
 
 export async function GET(req: Request) {
@@ -73,7 +76,13 @@ export async function GET(req: Request) {
     where,
     orderBy,
     include: {
-      images: true,
+      images: {
+        select: {
+          id: true,
+          url: true,
+          order: true,
+        },
+      },
     },
   });
 
