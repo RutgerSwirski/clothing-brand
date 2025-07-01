@@ -19,12 +19,17 @@ import { statusMap } from "@/lib/statusMap";
 //   AccordionTrigger,
 // } from "@/components/ui/accordion";
 
+export const dynamic = "force-static";
+export const revalidate = 60; // revalidate every 60 seconds
+
 export default async function ProductPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
+  console.time("fetchProduct");
 
   const product = await prisma.product.findUnique({
     where: { slug },
@@ -33,6 +38,7 @@ export default async function ProductPage({
       images: true,
     },
   });
+  console.timeEnd("fetchProduct");
 
   if (!product) notFound();
 
