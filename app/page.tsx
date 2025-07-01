@@ -238,18 +238,18 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="py-32 px-6 md:px-24 bg-stone-50 text-black font-body">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center tracking-tight mb-6">
+      <section className="py-28 sm:py-32 px-4 sm:px-10 md:px-24 bg-stone-50 text-black font-body">
+        <div className=" mx-auto">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center tracking-tight mb-4">
             In the Works
           </h2>
 
-          <div className="h-[2px] w-16 bg-stone-300 mx-auto mb-8" />
+          <div className="h-[2px] w-16 bg-stone-300 mx-auto mb-6" />
 
-          <p className="text-base md:text-lg text-center mb-16 max-w-2xl mx-auto text-stone-700 tracking-wide leading-relaxed">
+          <p className="text-base md:text-lg text-center mb-20 max-w-2xl mx-auto text-stone-700 tracking-normal leading-relaxed">
             A look behind the curtain — these upcoming pieces are
             mid-transformation. Each one is being reimagined, rebuilt, and soon
-            ready to wear. Keep an eye out.
+            ready to wear.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
