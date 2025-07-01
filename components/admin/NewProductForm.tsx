@@ -30,6 +30,7 @@ const productSchema = z.object({
   status: z.enum(["AVAILABLE", "COMING_SOON", "SOLD", "ARCHIVED"]),
   images: z
     .object({
+      id: z.number().int("Image ID must be an integer").optional(),
       url: z.string().url("Invalid URL format"),
       order: z.number().int("Order must be an integer").nonnegative(),
     })
@@ -86,7 +87,16 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
 
   const handleImageUpload = (urls: string[]) => {
     const current = getValues("images");
-    setValue("images", [...current, ...urls], { shouldValidate: true });
+    const updated = [
+      ...current,
+      ...urls.map((url, index) => ({
+        id: undefined, // New images won't have an ID initially
+        url,
+        order: current.length + index, // Set order based on current length
+      })),
+    ];
+    setValue("images", updated, { shouldValidate: true });
+    toast.success("Images uploaded successfully");
   };
 
   // const handleImageDelete = (url: string) => {

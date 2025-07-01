@@ -19,7 +19,6 @@ import { Image as ImageType, Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import dynamic from "next/dynamic";
-import type { ControllerRenderProps } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -105,49 +104,49 @@ export default function EditProductModal({
     }
   };
 
-  const handleDeleteImage = async ({
-    field,
-    url,
-  }: {
-    field: ControllerRenderProps<
-      {
-        name: string;
-        slug: string;
-        description?: string | undefined;
-        price: number;
-        featured?: boolean | undefined;
-        status:
-          | "AVAILABLE"
-          | "COMING_SOON"
-          | "SOLD"
-          | "ARCHIVED"
-          | "IN_PROGRESS";
-        images: {
-          url: string;
-          order: number;
-        }[];
-      },
-      "images"
-    >;
-    url: string;
-  }) => {
-    // we need to delete the image from the cloudinary server here
+  // const handleDeleteImage = async ({
+  //   field,
+  //   url,
+  // }: {
+  //   field: ControllerRenderProps<
+  //     {
+  //       name: string;
+  //       slug: string;
+  //       description?: string | undefined;
+  //       price: number;
+  //       featured?: boolean | undefined;
+  //       status:
+  //         | "AVAILABLE"
+  //         | "COMING_SOON"
+  //         | "SOLD"
+  //         | "ARCHIVED"
+  //         | "IN_PROGRESS";
+  //       images: {
+  //         url: string;
+  //         order: number;
+  //       }[];
+  //     },
+  //     "images"
+  //   >;
+  //   url: string;
+  // }) => {
+  //   // we need to delete the image from the cloudinary server here
 
-    try {
-      toast.loading("Deleting image...");
-      await axios.delete(`/api/admin/products/${product.id}/images`, {
-        data: { url }, // <-- you're sending it in the body, not as a route param
-      });
+  //   try {
+  //     toast.loading("Deleting image...");
+  //     await axios.delete(`/api/admin/products/${product.id}/images`, {
+  //       data: { url }, // <-- you're sending it in the body, not as a route param
+  //     });
 
-      // Remove the image URL from the field value
-      field.onChange(field.value.filter((img) => img.url !== url));
-      toast.success("Image deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-    } catch (error) {
-      console.error("Failed to delete image:", error);
-      toast.error("Failed to delete image");
-    }
-  };
+  //     // Remove the image URL from the field value
+  //     field.onChange(field.value.filter((img) => img.url !== url));
+  //     toast.success("Image deleted successfully");
+  //     queryClient.invalidateQueries({ queryKey: ["products"] });
+  //   } catch (error) {
+  //     console.error("Failed to delete image:", error);
+  //     toast.error("Failed to delete image");
+  //   }
+  // };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
