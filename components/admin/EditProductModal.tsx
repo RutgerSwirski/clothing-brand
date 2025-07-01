@@ -1,16 +1,11 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "../ui/input";
 import {
   Select,
   SelectContent,
@@ -19,14 +14,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ImageUploader from "./ImageUploader";
-import { Button } from "../ui/button";
-import Image from "next/image";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Image as ImageType, Product } from "@prisma/client";
-import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import dynamic from "next/dynamic";
 import type { ControllerRenderProps } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import SortableImageList from "../ui/SortableImageList";
+import ImageUploader from "./ImageUploader";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -43,10 +43,15 @@ const schema = z.object({
     "ARCHIVED",
     "IN_PROGRESS",
   ]),
+  // images include url and order
   images: z
-    .array(z.string().url())
+    .object({
+      url: z.string().url(),
+      order: z.number(),
+    })
+    .array()
     .min(1, "At least one image is required")
-    .refine((images) => images.every((url) => url.startsWith("http")), {
+    .refine((images) => images.every((img) => img.url.startsWith("http")), {
       message: "All images must be valid URLs",
     }),
 });
@@ -61,6 +66,7 @@ export default function EditProductModal({
 
   onClose: () => void;
 }) {
+  console.log("EditProductModal product:", product);
   const queryClient = useQueryClient();
 
   const {
@@ -76,7 +82,10 @@ export default function EditProductModal({
       description: product.description || "",
       price: product.price,
       status: product.status,
-      images: product.images?.map((img) => img.url) || [],
+      images: product.images.map((img, idx) => ({
+        url: img.url,
+        order: idx,
+      })),
       featured: product.featured || false,
     },
   });
@@ -112,7 +121,10 @@ export default function EditProductModal({
           | "SOLD"
           | "ARCHIVED"
           | "IN_PROGRESS";
-        images: string[];
+        images: {
+          url: string;
+          order: number;
+        }[];
       },
       "images"
     >;
@@ -127,7 +139,7 @@ export default function EditProductModal({
       });
 
       // Remove the image URL from the field value
-      field.onChange(field.value.filter((u: string) => u !== url));
+      field.onChange(field.value.filter((img) => img.url !== url));
       toast.success("Image deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["products"] });
     } catch (error) {
@@ -227,26 +239,10 @@ export default function EditProductModal({
                   productId={String(product.id)}
                   onUpload={(urls) => field.onChange([...field.value, ...urls])}
                 />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {field.value.map((url, idx) => (
-                    <div key={idx} className="relative group">
-                      <Image
-                        src={url}
-                        alt={`Product image ${idx + 1}`}
-                        width={300}
-                        height={300}
-                        className="rounded"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteImage({ field, url })}
-                        className="absolute top-1 right-1 bg-white text-red-600 rounded-full px-2 py-1 text-xs hidden group-hover:block cursor-pointer"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                <SortableImageList
+                  images={field.value}
+                  onChange={(reindexed) => field.onChange(reindexed)}
+                />
               </>
             )}
           />
