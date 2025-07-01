@@ -14,7 +14,17 @@ const productSchema = z.object({
     "ARCHIVED",
     "IN_PROGRESS",
   ]),
-  images: z.array(z.string().url()).min(1, "At least one image is required"),
+  images: z
+    .object({
+      id: z.number().int("Image ID must be an integer"),
+      url: z.string().url("Invalid URL format"),
+      order: z.number().int("Order must be an integer"),
+    })
+    .array()
+    .min(1, "At least one image is required")
+    .refine((images) => images.every((img) => img.url.startsWith("http")), {
+      message: "All images must be valid URLs",
+    }),
   featured: z.boolean().optional(),
 });
 
@@ -45,6 +55,15 @@ export async function PUT(
         featured: parsed.featured,
       },
     });
+
+    await Promise.all(
+      parsed.images.map((img) =>
+        prisma.image.update({
+          where: { id: img.id, productId: product.id },
+          data: { order: img.order },
+        })
+      )
+    );
 
     return NextResponse.json(product);
   } catch (error) {

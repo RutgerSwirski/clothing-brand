@@ -29,9 +29,14 @@ const productSchema = z.object({
   price: z.coerce.number().gt(0, "Price must be greater than zero"),
   status: z.enum(["AVAILABLE", "COMING_SOON", "SOLD", "ARCHIVED"]),
   images: z
-    .array(z.string().url())
+    .object({
+      id: z.number().int("Image ID must be an integer").optional(),
+      url: z.string().url("Invalid URL format"),
+      order: z.number().int("Order must be an integer").nonnegative(),
+    })
+    .array()
     .min(1, "At least one image is required")
-    .refine((images) => images.every((url) => url.startsWith("http")), {
+    .refine((images) => images.every((img) => img.url.startsWith("http")), {
       message: "All images must be valid URLs",
     }),
 });
@@ -82,7 +87,16 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
 
   const handleImageUpload = (urls: string[]) => {
     const current = getValues("images");
-    setValue("images", [...current, ...urls], { shouldValidate: true });
+    const updated = [
+      ...current,
+      ...urls.map((url, index) => ({
+        id: undefined, // New images won't have an ID initially
+        url,
+        order: current.length + index, // Set order based on current length
+      })),
+    ];
+    setValue("images", updated, { shouldValidate: true });
+    toast.success("Images uploaded successfully");
   };
 
   // const handleImageDelete = (url: string) => {
