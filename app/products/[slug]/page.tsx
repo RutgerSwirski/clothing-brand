@@ -29,8 +29,6 @@ export default async function ProductPage({
 }) {
   const { slug } = await params;
 
-  console.time("fetchProduct");
-
   const product = await prisma.product.findUnique({
     where: { slug },
     include: {
@@ -38,7 +36,6 @@ export default async function ProductPage({
       images: true,
     },
   });
-  console.timeEnd("fetchProduct");
 
   if (!product) notFound();
 
