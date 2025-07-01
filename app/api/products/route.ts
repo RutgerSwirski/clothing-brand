@@ -27,8 +27,6 @@ export async function GET(req: Request) {
   const sortBy = searchParams.get("sortBy");
   const search = searchParams.get("search") || "";
 
-  console.log("Availability:", availability);
-
   const where = {
     ...(category && category !== "all" ? { category } : {}),
     ...(availability === "available"
