@@ -1,25 +1,25 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import ImageUploader from "@/components/admin/ImageUploader";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useQueryClient } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
 import {
-  SelectValue,
   Select,
   SelectContent,
   SelectGroup,
-  SelectTrigger,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "../ui/select";
-import { useQueryClient } from "@tanstack/react-query";
-import dynamic from "next/dynamic";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -88,6 +88,12 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
     const current = getValues("images");
     setValue("images", [...current, ...urls], { shouldValidate: true });
   };
+
+  // const handleImageDelete = (url: string) => {
+  //   const current = getValues("images");
+  //   const updated = current.filter((image) => image !== url);
+  //   setValue("images", updated, { shouldValidate: true });
+  // };
 
   return (
     <form
