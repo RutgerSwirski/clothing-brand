@@ -38,11 +38,11 @@ const ItemCard: FC<ItemCardProps> = ({
     <div
       data-testid="item-card"
       className={clsx(
-        "flex flex-col md:flex-row w-full border border-stone-200 rounded-2xl overflow-hidden font-body bg-white transition-all duration-300 group"
+        "flex flex-col md:flex-row w-full h-[500px] border border-stone-200 rounded-2xl overflow-hidden font-body bg-white transition-all duration-300 group"
       )}
     >
-      <div className="w-full md:w-1/2 relative bg-stone-100 border-b md:border-b-0 md:border-r border-stone-200">
-        <div className="aspect-[4/5] md:aspect-auto w-full h-full relative">
+      <div className="w-full md:w-1/2 relative bg-stone-100 border-b md:border-b-0 md:border-r border-stone-200 flex items-stretch">
+        <div className="relative w-full h-full min-h-[500px]">
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
             <span
               className={clsx(
@@ -88,7 +88,9 @@ const ItemCard: FC<ItemCardProps> = ({
             </h2>
           </Link>
 
-          <MarkdownContent content={description} />
+          <div className="max-h-[300px] overflow-auto">
+            <MarkdownContent content={description} />
+          </div>
 
           <p className="text-lg md:text-xl font-semibold text-black mt-2">
             {price ? `$${price.toFixed(2)}` : "Price not available"}
