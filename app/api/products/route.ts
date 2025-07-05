@@ -1,32 +1,9 @@
 import { auth } from "@/lib/auth";
+import { cloudinary } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import type { ProductStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-
-const productSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
-  price: z.coerce.number().gt(0, "Price must be greater than zero"),
-  status: z.enum([
-    "AVAILABLE",
-    "COMING_SOON",
-    "SOLD",
-    "ARCHIVED",
-    "IN_PROGRESS",
-  ]),
-  images: z
-    .object({
-      id: z.number().int("Image ID must be an integer").optional(),
-      url: z.string().url("Invalid URL format"),
-      order: z.number().int("Order must be an integer").nonnegative(),
-    })
-    .array()
-    .min(1, "At least one image is required")
-    .refine((images) => images.every((img) => img.url.startsWith("http")), {
-      message: "All images must be valid URLs",
-    }),
-});
+import { v4 as uuid } from "uuid";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -91,40 +68,105 @@ export async function GET(req: Request) {
 export async function POST(req: NextRequest) {
   const session = await auth();
 
-  // Only allow admin
   if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
+    console.warn("Unauthorized attempt to create product");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const body = await req.json();
-    const parsed = productSchema.parse(body);
+    console.log("📦 Parsing form data...");
+    const formData = await req.formData();
 
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const price = parseFloat(formData.get("price") as string);
+    const status = formData.get("status") as ProductStatus;
+
+    const files = formData.getAll("images") as File[];
+    const orders = formData
+      .getAll("orders")
+      .map((order) => parseInt(order as string, 10));
+
+    if (!name || !description || !price || !status || files.length === 0) {
+      console.warn("❗ Missing required fields:", {
+        name,
+        description,
+        price,
+        status,
+        files: files.length,
+      });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    console.log("🛠️ Creating product:", { name, price, status });
     const product = await prisma.product.create({
       data: {
-        name: parsed.name,
-        slug: parsed.name.toLowerCase().replace(/\s+/g, "-"),
-        description: parsed.description,
-        price: parsed.price,
-        status: parsed.status,
-        images: {
-          createMany: {
-            data: parsed.images.map((img) => ({
-              url: img.url,
-              order: img.order,
-            })),
-          },
-        },
+        name,
+        slug: name.toLowerCase().replace(/\s+/g, "-"),
+        description,
+        price,
+        status,
       },
     });
+    console.log("✅ Product created:", product.id);
+
+    const uploadedImages = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const order = orders[i] ?? i;
+
+      console.log(`📤 Uploading image ${i + 1}/${files.length}...`);
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      interface CloudinaryUploadResult {
+        secure_url: string;
+        [key: string]: unknown;
+      }
+
+      const result = await new Promise<CloudinaryUploadResult>(
+        (resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream(
+              {
+                folder: "studio-remade",
+                public_id: `${uuid()}-${file.name}`,
+                timeout: 60000,
+              },
+              (error, result) => {
+                if (error || !result) {
+                  console.error(`❌ Upload failed for image ${i + 1}`, error);
+                  return reject(error);
+                }
+                resolve(result as CloudinaryUploadResult);
+              }
+            )
+            .end(buffer);
+        }
+      );
+
+      console.log(`✅ Image ${i + 1} uploaded:`, result.secure_url);
+
+      uploadedImages.push({
+        url: result.secure_url,
+        order,
+        productId: product.id,
+      });
+    }
+
+    console.log("🧾 Saving uploaded image metadata to DB...");
+    await prisma.image.createMany({
+      data: uploadedImages,
+    });
+    console.log("✅ Image records saved");
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
-    console.error("Error creating product:", error);
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.flatten() }, { status: 400 });
-    }
-
+    console.error("❌ Product creation failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

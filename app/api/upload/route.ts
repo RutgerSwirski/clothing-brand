@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { cloudinary } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import { UploadApiResponse } from "cloudinary";
+import { v4 as uuid } from "uuid";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -30,12 +31,15 @@ export async function POST(request: Request) {
   try {
     const uploadResult = (await new Promise((resolve, reject) => {
       cloudinary.uploader
-        .upload_stream({ folder: "studio-remade" }, (error, result) => {
-          if (error) return reject(error);
-          if (!result)
-            return reject(new Error("No result returned from Cloudinary"));
-          resolve(result);
-        })
+        .upload_stream(
+          { folder: "studio-remade", public_id: `${uuid()}-${file.name}` },
+          (error, result) => {
+            if (error) return reject(error);
+            if (!result)
+              return reject(new Error("No result returned from Cloudinary"));
+            resolve(result);
+          }
+        )
         .end(buffer);
     })) as UploadApiResponse;
 
