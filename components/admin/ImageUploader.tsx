@@ -9,7 +9,7 @@ export default function ImageUploader({
   onUpload,
   productId,
 }: {
-  onUpload: (urls: string[]) => void;
+  onUpload: (urlsOrFiles: string[] | File[]) => void;
   productId?: string; // optional, if you want to associate uploads with a specific product
 }) {
   const [uploading, setUploading] = useState(false);
@@ -18,6 +18,11 @@ export default function ImageUploader({
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
+
+    if (!productId) {
+      onUpload(files);
+      return;
+    }
 
     setUploading(true);
     setProgress(0);

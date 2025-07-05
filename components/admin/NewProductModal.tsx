@@ -17,7 +17,7 @@ export default function NewProductModal({
 }) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="overflow-y-scroll max-h-[90vh] max-w-2xl sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create New Product</DialogTitle>
         </DialogHeader>

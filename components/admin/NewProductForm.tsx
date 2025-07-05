@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import SortableImageList from "../ui/SortableImageList";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -31,14 +32,19 @@ const productSchema = z.object({
   images: z
     .object({
       id: z.number().int("Image ID must be an integer").optional(),
-      url: z.string().url("Invalid URL format"),
+      url: z
+        .string()
+        .refine(
+          (url) =>
+            url.startsWith("http://") ||
+            url.startsWith("https://") ||
+            url.startsWith("blob:"),
+          { message: "Image URL must be valid or a temporary blob URL" }
+        ),
       order: z.number().int("Order must be an integer").nonnegative(),
     })
     .array()
-    .min(1, "At least one image is required")
-    .refine((images) => images.every((img) => img.url.startsWith("http")), {
-      message: "All images must be valid URLs",
-    }),
+    .min(1, "At least one image is required"),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -47,12 +53,16 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
 
+  const [pendingImages, setPendingImages] = useState<
+    { file: File; url: string; order: number }[]
+  >([]);
+
   const {
     control,
     register,
     handleSubmit,
     setValue,
-    getValues,
+
     formState: { errors },
     reset,
   } = useForm<ProductFormValues>({
@@ -68,14 +78,27 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
 
   const onSubmit = async (data: ProductFormValues) => {
     setSubmitting(true);
-    try {
-      await axios.post("/api/products", data);
-      toast.success("Product created");
-      queryClient.invalidateQueries({ queryKey: ["products"] }); // Invalidate products cache
-      // Reset form after successful submission
-      reset();
 
-      // close
+    try {
+      const formData = new FormData();
+
+      // Append product fields
+      formData.append("name", data.name);
+      formData.append("description", data.description);
+      formData.append("price", String(data.price));
+      formData.append("status", data.status);
+
+      // Append each image file and order
+      pendingImages.forEach((img) => {
+        formData.append("images", img.file); // appends as image[]
+        formData.append("orders", String(img.order));
+      });
+
+      await axios.post("/api/products", formData);
+
+      toast.success("Product created");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      reset();
       onClose();
     } catch (err) {
       toast.error("Failed to create product");
@@ -85,32 +108,50 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const handleImageUpload = (urls: string[]) => {
-    const current = getValues("images");
-    const updated = [
-      ...current,
-      ...urls.map((url, index) => ({
-        id: undefined, // New images won't have an ID initially
+  const handleImageUpload = (uploads: string[] | File[]) => {
+    if (typeof uploads[0] === "string") {
+      // If using Cloudinary upload directly and receiving URLs
+      const uploadedUrls = uploads as string[];
+
+      const urlObjects = uploadedUrls.map((url, index) => ({
+        file: undefined as unknown as File, // placeholder
         url,
-        order: current.length + index, // Set order based on current length
-      })),
-    ];
-    setValue("images", updated, { shouldValidate: true });
-    toast.success("Images uploaded successfully");
+        order: index,
+      }));
+
+      setPendingImages(urlObjects);
+    } else {
+      // Local preview fallback
+      const files = uploads as File[];
+
+      // Revoke existing preview URLs
+      pendingImages.forEach((img) => URL.revokeObjectURL(img.url));
+
+      const previews = files.map((file, index) => ({
+        file,
+        url: URL.createObjectURL(file),
+        order: index,
+      }));
+
+      setPendingImages(previews);
+    }
   };
 
-  // const handleImageDelete = (url: string) => {
-  //   const current = getValues("images");
-  //   const updated = current.filter((image) => image !== url);
-  //   setValue("images", updated, { shouldValidate: true });
-  // };
+  useEffect(() => {
+    const formImages = pendingImages.map((img) => ({
+      id: undefined,
+      url: img.url, // Use the preview URL for immediate display
+      order: img.order,
+    }));
+    setValue("images", formImages, { shouldValidate: true });
+  }, [pendingImages, setValue]);
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit, (errors) => {
         console.log("Validation Errors:", errors);
       })}
-      className="space-y-6 max-w-xl"
+      className="space-y-6"
     >
       <div>
         <label className="text-sm font-medium text-stone-700">Name</label>
@@ -188,6 +229,22 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
 
       <div>
         <ImageUploader onUpload={handleImageUpload} />
+        <SortableImageList
+          images={pendingImages.map(({ url, order }) => ({
+            url,
+            order,
+          }))}
+          onChange={(newImages) => {
+            const reordered = newImages
+              .map((img, index) => {
+                const match = pendingImages.find((p) => p.url === img.url);
+                return match ? { ...match, order: index } : null;
+              })
+              .filter(Boolean) as typeof pendingImages;
+
+            setPendingImages(reordered);
+          }}
+        />
 
         {errors.images && (
           <p className="text-sm text-red-500">{errors.images.message}</p>
