@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "ts-node ./prisma/seed.ts",
-    "test": "playwright test --config=playwright.config.ts"
+    "test": "playwright test --config=playwright.config.ts",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "dotenv -e env.production -- prisma migrate deploy",
+    "generate": "prisma generate"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
