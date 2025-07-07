@@ -69,6 +69,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
+    "knip": "^5.61.3",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
