@@ -43,8 +43,7 @@ const productSchema = z.object({
         ),
       order: z.number().int("Order must be an integer").nonnegative(),
     })
-    .array()
-    .min(1, "At least one image is required"),
+    .array(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
