@@ -53,7 +53,7 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
   const [submitting, setSubmitting] = useState(false);
 
   const [pendingImages, setPendingImages] = useState<
-    { file: File; url: string; order: number }[]
+    { url: string; order: number }[]
   >([]);
 
   const {
@@ -77,69 +77,40 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
 
   const onSubmit = async (data: ProductFormValues) => {
     setSubmitting(true);
-
     const toastId = toast.loading("Creating product...");
 
     try {
-      const formData = new FormData();
-
-      // Append product fields
-      formData.append("name", data.name);
-      formData.append("description", data.description);
-      formData.append("price", String(data.price));
-      formData.append("status", data.status);
-
-      // Append each image file and order
-      pendingImages.forEach((img) => {
-        formData.append("images", img.file); // appends as image[]
-        formData.append("orders", String(img.order));
+      await axios.post("/api/products", {
+        ...data,
+        images: pendingImages.map(({ url, order }) => ({
+          url,
+          order,
+        })),
       });
 
-      await axios.post("/api/products", formData);
-
-      toast.success("Product created", {
-        id: toastId,
-      });
+      toast.success("Product created", { id: toastId });
       queryClient.invalidateQueries({ queryKey: ["products"] });
       reset();
       onClose();
     } catch (err) {
-      toast.error("Failed to create product", {
-        id: toastId,
-      });
+      toast.error("Failed to create product", { id: toastId });
       console.error(err);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleImageUpload = (uploads: string[] | File[]) => {
-    if (typeof uploads[0] === "string") {
-      // If using Cloudinary upload directly and receiving URLs
-      const uploadedUrls = uploads as string[];
+  const handleImageUpload = (uploaded: { url: string; order: number }[]) => {
+    console.log("Uploaded images:", uploaded);
 
-      const urlObjects = uploadedUrls.map((url, index) => ({
-        file: undefined as unknown as File, // placeholder
-        url,
-        order: index,
-      }));
-
-      setPendingImages(urlObjects);
-    } else {
-      // Local preview fallback
-      const files = uploads as File[];
-
-      // Revoke existing preview URLs
-      pendingImages.forEach((img) => URL.revokeObjectURL(img.url));
-
-      const previews = files.map((file, index) => ({
-        file,
-        url: URL.createObjectURL(file),
-        order: index,
-      }));
-
-      setPendingImages(previews);
-    }
+    setPendingImages((prev) => [
+      ...prev,
+      ...uploaded.map((img) => ({
+        file: undefined as unknown as File, // no longer needed, but kept for type compatibility
+        url: img.url,
+        order: img.order,
+      })),
+    ]);
   };
 
   useEffect(() => {

@@ -1,8 +1,4 @@
 import { auth } from "@/lib/auth";
-import {
-  parseProductFormData,
-  uploadImagesToCloudinary,
-} from "@/lib/handleProductUpload";
 import { prisma } from "@/lib/prisma";
 import type { ProductStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -75,39 +71,46 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const formData = await req.formData();
-    const { name, slug, description, price, status, featured, files, orders } =
-      await parseProductFormData(formData);
+    const body = await req.json(); // ✅ not formData anymore
+    const { name, description, price, status, featured, images } = body;
+
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, ""); // Normalize slug
+
+    if (!slug) {
+      return NextResponse.json(
+        { error: "Invalid product name for slug generation" },
+        { status: 400 }
+      );
+    }
 
     const product = await prisma.product.create({
-      data: { name, slug, description, price, status, featured },
+      data: {
+        name,
+        slug,
+        description,
+        price,
+        status,
+        featured,
+      },
     });
 
-    const uploadedImages = await uploadImagesToCloudinary(
-      files,
-      orders,
-      product.id
-    );
-
-    await prisma.image.createMany({ data: uploadedImages });
+    await prisma.image.createMany({
+      data: images.map((img: { url: string; order: number }) => ({
+        url: img.url,
+        order: img.order,
+        productId: product.id,
+      })),
+    });
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
     console.error("❌ Product creation failed:", error);
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
     );
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false, // Disable default body parser to handle form data manually
-    sizeLimit: "50mb", // Set a size limit for the request body
-  },
-};

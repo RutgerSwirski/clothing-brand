@@ -1,8 +1,4 @@
 import { auth } from "@/lib/auth";
-import {
-  parseProductFormData,
-  uploadImagesToCloudinary,
-} from "@/lib/handleProductUpload";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -18,33 +14,30 @@ export async function PUT(
   try {
     const resolvedParams = await params;
     const productId = parseInt(resolvedParams.id, 10);
-    const formData = await req.formData();
 
-    const { name, slug, description, price, status, featured, files, orders } =
-      await parseProductFormData(formData);
+    const body = await req.json();
+    const { name, slug, description, price, status, featured, images } = body;
 
     const product = await prisma.product.update({
       where: { id: productId },
       data: { name, slug, description, price, status, featured },
     });
 
-    if (files.length > 0) {
+    if (images && Array.isArray(images)) {
       await prisma.image.deleteMany({ where: { productId } });
-      const uploadedImages = await uploadImagesToCloudinary(
-        files,
-        orders,
-        productId
-      );
-      await prisma.image.createMany({ data: uploadedImages });
+
+      await prisma.image.createMany({
+        data: images.map((img: { url: string; order: number }) => ({
+          url: img.url,
+          order: img.order,
+          productId,
+        })),
+      });
     }
 
     return NextResponse.json(product);
   } catch (error) {
     console.error("❌ Product update failed:", error);
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -97,10 +90,3 @@ export async function DELETE(
     );
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false, // Disable default body parser to handle form data manually
-    sizeLimit: "50mb", // Set a size limit for the request body
-  },
-};
