@@ -26,7 +26,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import SortableImageList from "../ui/SortableImageList";
 import ImageUploader from "./ImageUploader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
@@ -68,7 +68,7 @@ export default function EditProductModal({
   const queryClient = useQueryClient();
 
   const [pendingImages, setPendingImages] = useState<
-    { file: File; url: string; order: number }[]
+    { url: string; order: number }[]
   >([]);
 
   const [submitting, setSubmitting] = useState(false);
@@ -99,35 +99,45 @@ export default function EditProductModal({
     const toastId = toast.loading("Updating product...");
 
     try {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("description", data.description || "");
-      formData.append("price", String(data.price));
-      formData.append("status", data.status);
-      formData.append("featured", String(data.featured || false));
-
-      pendingImages.forEach((img) => {
-        formData.append("images", img.file);
-        formData.append("orders", String(img.order));
+      await axios.put(`/api/admin/products/${product.id}`, {
+        ...data,
+        images: pendingImages.map(({ url, order }) => ({
+          url,
+          order,
+        })),
       });
 
-      await axios.put(`/api/admin/products/${product.id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      toast.success("Product updated successfully", {
-        id: toastId,
-      });
+      toast.success("Product updated successfully", { id: toastId });
       queryClient.invalidateQueries({ queryKey: ["products"] });
       onClose();
     } catch (error) {
       console.error("Failed to update product:", error);
-      toast.error("Failed to update product", {
-        id: toastId,
-      });
+      toast.error("Failed to update product", { id: toastId });
     } finally {
       setSubmitting(false);
     }
+  };
+
+  useEffect(() => {
+    const initialImages = product.images.map((img) => ({
+      file: undefined as unknown as File,
+      url: img.url,
+      order: img.order,
+    }));
+    setPendingImages(initialImages);
+  }, [product]);
+
+  const handleImageUpload = (uploaded: { url: string; order: number }[]) => {
+    console.log("Uploaded images:", uploaded);
+
+    setPendingImages((prev) => [
+      ...prev,
+      ...uploaded.map((img) => ({
+        file: undefined as unknown as File, // no longer needed, but kept for type compatibility
+        url: img.url,
+        order: img.order,
+      })),
+    ]);
   };
 
   // const handleDeleteImage = async ({
@@ -258,16 +268,7 @@ export default function EditProductModal({
             name="images"
             render={() => (
               <>
-                <ImageUploader
-                  onUpload={(files: File[]) => {
-                    const previews = files.map((file, index) => ({
-                      file,
-                      url: URL.createObjectURL(file),
-                      order: pendingImages.length + index,
-                    }));
-                    setPendingImages((prev) => [...prev, ...previews]);
-                  }}
-                />
+                <ImageUploader onUpload={handleImageUpload} />
 
                 <SortableImageList
                   images={pendingImages.map(({ url, order }) => ({
