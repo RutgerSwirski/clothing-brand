@@ -78,6 +78,8 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
   const onSubmit = async (data: ProductFormValues) => {
     setSubmitting(true);
 
+    const toastId = toast.loading("Creating product...");
+
     try {
       const formData = new FormData();
 
@@ -95,12 +97,16 @@ export default function NewProductForm({ onClose }: { onClose: () => void }) {
 
       await axios.post("/api/products", formData);
 
-      toast.success("Product created");
+      toast.success("Product created", {
+        id: toastId,
+      });
       queryClient.invalidateQueries({ queryKey: ["products"] });
       reset();
       onClose();
     } catch (err) {
-      toast.error("Failed to create product");
+      toast.error("Failed to create product", {
+        id: toastId,
+      });
       console.error(err);
     } finally {
       setSubmitting(false);

@@ -26,12 +26,12 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import SortableImageList from "../ui/SortableImageList";
 import ImageUploader from "./ImageUploader";
+import { useState } from "react";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 const schema = z.object({
   name: z.string().min(1),
-  slug: z.string().min(1),
   description: z.string().optional(),
   price: z.coerce.number().gt(0),
   featured: z.boolean().optional(),
@@ -67,6 +67,12 @@ export default function EditProductModal({
 }) {
   const queryClient = useQueryClient();
 
+  const [pendingImages, setPendingImages] = useState<
+    { file: File; url: string; order: number }[]
+  >([]);
+
+  const [submitting, setSubmitting] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -76,7 +82,6 @@ export default function EditProductModal({
     resolver: zodResolver(schema),
     defaultValues: {
       name: product.name,
-      slug: product.slug,
       description: product.description || "",
       price: product.price,
       status: product.status,
@@ -90,16 +95,38 @@ export default function EditProductModal({
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
+    setSubmitting(true);
+    const toastId = toast.loading("Updating product...");
+
     try {
-      await axios.put(`/api/admin/products/${product.id}`, data);
-      //
-      toast.success("Product updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["products"] }); // Invalidate the products query to refresh the list
-      onClose(); // Close the modal after successful update
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("description", data.description || "");
+      formData.append("price", String(data.price));
+      formData.append("status", data.status);
+      formData.append("featured", String(data.featured || false));
+
+      pendingImages.forEach((img) => {
+        formData.append("images", img.file);
+        formData.append("orders", String(img.order));
+      });
+
+      await axios.put(`/api/admin/products/${product.id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success("Product updated successfully", {
+        id: toastId,
+      });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      onClose();
     } catch (error) {
       console.error("Failed to update product:", error);
-      alert("Failed to update product. Please try again.");
-      toast.error("Failed to update product");
+      toast.error("Failed to update product", {
+        id: toastId,
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -161,10 +188,7 @@ export default function EditProductModal({
           {errors.name && (
             <p className="text-red-500 text-sm">{errors.name.message}</p>
           )}
-          <Input placeholder="Slug" {...register("slug")} />
-          {errors.slug && (
-            <p className="text-red-500 text-sm">{errors.slug.message}</p>
-          )}
+
           <Controller
             control={control}
             name="description"
@@ -232,24 +256,43 @@ export default function EditProductModal({
           <Controller
             control={control}
             name="images"
-            render={({ field }) => (
+            render={() => (
               <>
                 <ImageUploader
-                  productId={String(product.id)}
-                  onUpload={(urls) => field.onChange([...field.value, ...urls])}
+                  onUpload={(files: File[]) => {
+                    const previews = files.map((file, index) => ({
+                      file,
+                      url: URL.createObjectURL(file),
+                      order: pendingImages.length + index,
+                    }));
+                    setPendingImages((prev) => [...prev, ...previews]);
+                  }}
                 />
+
                 <SortableImageList
-                  images={field.value}
-                  onChange={(reindexed) => {
-                    field.onChange(reindexed);
+                  images={pendingImages.map(({ url, order }) => ({
+                    url,
+                    order,
+                  }))}
+                  onChange={(sorted) => {
+                    const reordered = sorted
+                      .map((img, index) => {
+                        const original = pendingImages.find(
+                          (p) => p.url === img.url
+                        );
+                        return original ? { ...original, order: index } : null;
+                      })
+                      .filter(Boolean) as typeof pendingImages;
+
+                    setPendingImages(reordered);
                   }}
                 />
               </>
             )}
           />
 
-          <Button type="submit" className="w-full">
-            Update Product
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? "Updating..." : "Update Product"}
           </Button>
         </form>
       </DialogContent>
