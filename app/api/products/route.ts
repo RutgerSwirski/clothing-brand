@@ -1,9 +1,11 @@
 import { auth } from "@/lib/auth";
-import { cloudinary } from "@/lib/cloudinary";
+import {
+  parseProductFormData,
+  uploadImagesToCloudinary,
+} from "@/lib/handleProductUpload";
 import { prisma } from "@/lib/prisma";
 import type { ProductStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { v4 as uuid } from "uuid";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -69,103 +71,33 @@ export async function POST(req: NextRequest) {
   const session = await auth();
 
   if (!session || session.user?.email !== process.env.ADMIN_EMAIL) {
-    console.warn("Unauthorized attempt to create product");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    console.log("📦 Parsing form data...");
     const formData = await req.formData();
+    const { name, slug, description, price, status, featured, files, orders } =
+      await parseProductFormData(formData);
 
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const price = parseFloat(formData.get("price") as string);
-    const status = formData.get("status") as ProductStatus;
-
-    const files = formData.getAll("images") as File[];
-    const orders = formData
-      .getAll("orders")
-      .map((order) => parseInt(order as string, 10));
-
-    if (!name || !description || !price || !status) {
-      console.warn("❗ Missing required fields:", {
-        name,
-        description,
-        price,
-        status,
-      });
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    console.log("🛠️ Creating product:", { name, price, status });
     const product = await prisma.product.create({
-      data: {
-        name,
-        slug: name.toLowerCase().replace(/\s+/g, "-"),
-        description,
-        price,
-        status,
-      },
+      data: { name, slug, description, price, status, featured },
     });
-    console.log("✅ Product created:", product.id);
 
-    const uploadedImages = [];
+    const uploadedImages = await uploadImagesToCloudinary(
+      files,
+      orders,
+      product.id
+    );
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const order = orders[i] ?? i;
-
-      console.log(`📤 Uploading image ${i + 1}/${files.length}...`);
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-
-      interface CloudinaryUploadResult {
-        secure_url: string;
-        [key: string]: unknown;
-      }
-
-      const result = await new Promise<CloudinaryUploadResult>(
-        (resolve, reject) => {
-          cloudinary.uploader
-            .upload_stream(
-              {
-                folder: "studio-remade",
-                public_id: `${uuid()}-${file.name}`,
-                timeout: 60000,
-              },
-              (error, result) => {
-                if (error || !result) {
-                  console.error(`❌ Upload failed for image ${i + 1}`, error);
-                  return reject(error);
-                }
-                resolve(result as CloudinaryUploadResult);
-              }
-            )
-            .end(buffer);
-        }
-      );
-
-      console.log(`✅ Image ${i + 1} uploaded:`, result.secure_url);
-
-      uploadedImages.push({
-        url: result.secure_url,
-        order,
-        productId: product.id,
-      });
-    }
-
-    console.log("🧾 Saving uploaded image metadata to DB...");
-    await prisma.image.createMany({
-      data: uploadedImages,
-    });
-    console.log("✅ Image records saved");
+    await prisma.image.createMany({ data: uploadedImages });
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
     console.error("❌ Product creation failed:", error);
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

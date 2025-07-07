@@ -1,33 +1,11 @@
 import { auth } from "@/lib/auth";
+import {
+  parseProductFormData,
+  uploadImagesToCloudinary,
+} from "@/lib/handleProductUpload";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 
-const productSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
-  price: z.coerce.number().gt(0, "Price must be greater than zero"),
-  status: z.enum([
-    "AVAILABLE",
-    "COMING_SOON",
-    "SOLD",
-    "ARCHIVED",
-    "IN_PROGRESS",
-  ]),
-  images: z
-    .object({
-      id: z.number().int("Image ID must be an integer"),
-      url: z.string().url("Invalid URL format"),
-      order: z.number().int("Order must be an integer"),
-    })
-    .array()
-    .refine((images) => images.every((img) => img.url.startsWith("http")), {
-      message: "All images must be valid URLs",
-    }),
-  featured: z.boolean().optional(),
-});
-
-// ✅ Correct signature for App Router dynamic routes
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -38,37 +16,33 @@ export async function PUT(
   }
 
   try {
-    const body = await req.json();
-    const parsed = productSchema.parse(body);
-
     const resolvedParams = await params;
+    const productId = parseInt(resolvedParams.id, 10);
+    const formData = await req.formData();
+
+    const { name, slug, description, price, status, featured, files, orders } =
+      await parseProductFormData(formData);
 
     const product = await prisma.product.update({
-      where: { id: parseInt(resolvedParams.id, 10) },
-      data: {
-        name: parsed.name,
-        slug: parsed.name.toLowerCase().replace(/\s+/g, "-"),
-        description: parsed.description,
-        price: parsed.price,
-        status: parsed.status,
-        featured: parsed.featured,
-      },
+      where: { id: productId },
+      data: { name, slug, description, price, status, featured },
     });
 
-    await Promise.all(
-      parsed.images.map((img) =>
-        prisma.image.update({
-          where: { id: img.id, productId: product.id },
-          data: { order: img.order },
-        })
-      )
-    );
+    if (files.length > 0) {
+      await prisma.image.deleteMany({ where: { productId } });
+      const uploadedImages = await uploadImagesToCloudinary(
+        files,
+        orders,
+        productId
+      );
+      await prisma.image.createMany({ data: uploadedImages });
+    }
 
     return NextResponse.json(product);
   } catch (error) {
-    console.error("Error updating product:", error);
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.flatten() }, { status: 400 });
+    console.error("❌ Product update failed:", error);
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json(
