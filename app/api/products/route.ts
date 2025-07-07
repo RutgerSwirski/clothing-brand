@@ -87,13 +87,12 @@ export async function POST(req: NextRequest) {
       .getAll("orders")
       .map((order) => parseInt(order as string, 10));
 
-    if (!name || !description || !price || !status || files.length === 0) {
+    if (!name || !description || !price || !status) {
       console.warn("❗ Missing required fields:", {
         name,
         description,
         price,
         status,
-        files: files.length,
       });
       return NextResponse.json(
         { error: "Missing required fields" },
