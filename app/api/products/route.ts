@@ -104,3 +104,10 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: false, // Disable default body parser to handle form data manually
+    sizeLimit: "50mb", // Set a size limit for the request body
+  },
+};
