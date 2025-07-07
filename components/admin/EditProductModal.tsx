@@ -50,7 +50,6 @@ const schema = z.object({
       order: z.number(),
     })
     .array()
-    .min(1, "At least one image is required")
     .refine((images) => images.every((img) => img.url.startsWith("http")), {
       message: "All images must be valid URLs",
     }),
