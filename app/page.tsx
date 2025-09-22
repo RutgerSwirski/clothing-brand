@@ -77,9 +77,9 @@ export default async function Home() {
             Nothing New. Everything Remade.
           </p>
 
-          <Link href="/products" passHref>
+          <Link href="/lookbook" passHref>
             <Button className="mt-6 transition-transform hover:scale-105 hover:bg-white/90 hover:text-black">
-              View Products
+              View Pieces
             </Button>
           </Link>
         </div>
