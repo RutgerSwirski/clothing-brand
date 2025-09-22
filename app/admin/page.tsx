@@ -18,24 +18,16 @@ export default async function AdminDashboard() {
       <ul className="grid gap-6 md:grid-cols-2">
         <li>
           <Link
-            href="/admin/products"
+            href="/admin/pieces"
             className="block p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-md hover:bg-stone-50 transition"
           >
-            <h2 className="text-xl font-semibold mb-1">🧵 Products</h2>
+            <h2 className="text-xl font-semibold mb-1">🧵 Pieces</h2>
             <p className="text-sm text-stone-600">
-              View and manage your listings
+              View and manage your pieces
             </p>
           </Link>
         </li>
-        <li>
-          <Link
-            href="/admin/orders"
-            className="block p-6 bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-md hover:bg-stone-50 transition"
-          >
-            <h2 className="text-xl font-semibold mb-1">📦 Orders</h2>
-            <p className="text-sm text-stone-600">Track recent purchases</p>
-          </Link>
-        </li>
+
         <li>
           <Link
             href="/admin/upcycle"

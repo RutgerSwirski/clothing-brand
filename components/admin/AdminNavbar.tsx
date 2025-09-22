@@ -7,8 +7,7 @@ import LogoutButton from "../ui/LogoutButton";
 
 const links = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/products", label: "Products" },
-  { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/pieces", label: "Pieces" },
   { href: "/admin/upcycle", label: "Upcycle" },
   { href: "/admin/newsletter", label: "Newsletter" },
 ];
