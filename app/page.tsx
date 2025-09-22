@@ -15,31 +15,29 @@ export const metadata = {
 export default async function Home() {
   // we need to fetch features products
 
-  const featuredProducts = await prisma.product.findMany({
-    where: {
-      featured: true,
+  const pieces = await prisma.piece.findMany({
+    where: { status: "PUBLISHED", featured: true },
+    orderBy: [
+      { featured: "desc" },
+      { sortOrder: "asc" },
+      { createdAt: "desc" },
+    ],
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      subtitle: true,
+      hero: { select: { url: true, width: true, height: true, alt: true } },
+      tags: { select: { tag: { select: { name: true, slug: true } } } },
+      techniques: {
+        select: { technique: { select: { name: true, slug: true } } },
+      },
+      year: true,
+      season: true,
     },
-    include: {
-      images: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 4,
   });
 
-  const inTheWorks = await prisma.product.findMany({
-    where: {
-      status: "IN_PROGRESS",
-    },
-    include: {
-      images: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 2,
-  });
+  console.log("pieces", pieces);
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -191,13 +189,13 @@ export default async function Home() {
 
           {/* Featured Products */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 my-20">
-            {featuredProducts.map((product) => (
+            {/* {featuredProducts.map((product) => (
               <ItemCard
                 key={product.id}
                 {...product}
                 description={product.description ?? undefined}
               />
-            ))}
+            ))} */}
           </div>
 
           {/* Feature Block 1 */}
@@ -235,32 +233,6 @@ export default async function Home() {
                 status="SOLD"
               />
             </div> */}
-        </div>
-      </section>
-
-      <section className="py-28 sm:py-32 px-4 sm:px-10 md:px-24 bg-stone-50 text-black font-body">
-        <div className=" mx-auto">
-          <h2 className="text-4xl md:text-5xl font-heading font-bold text-center tracking-tight mb-4">
-            In the Works
-          </h2>
-
-          <div className="h-[2px] w-16 bg-stone-300 mx-auto mb-6" />
-
-          <p className="text-base md:text-lg text-center mb-20 max-w-2xl mx-auto text-stone-700 tracking-normal leading-relaxed">
-            A look behind the curtain — these upcoming pieces are
-            mid-transformation. Each one is being reimagined, rebuilt, and soon
-            ready to wear.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-            {inTheWorks.map((product) => (
-              <ItemCard
-                key={product.id}
-                {...product}
-                description={product.description ?? undefined}
-              />
-            ))}
-          </div>
         </div>
       </section>
 

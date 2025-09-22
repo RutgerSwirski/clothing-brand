@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,56 +8,119 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-enum ProductStatus {
-  AVAILABLE
-  SOLD
-  COMING_SOON
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
   ARCHIVED
-  IN_PROGRESS
 }
 
-model Product {
-  id          Int           @id @default(autoincrement())
-  name        String
-  slug        String        @unique
-  description String?
-  price       Float
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  images      Image[]
-  status      ProductStatus @default(AVAILABLE)
-  orders      Order[]       @relation("OrderItems")
-  featured    Boolean       @default(false)
+enum MediaType {
+  IMAGE
+  VIDEO
 }
 
-enum OrderStatus {
-  paid
-  pending
-  failed
-  refunded
-}
+model Piece {
+  id       Int           @id @default(autoincrement())
+  title    String
+  slug     String        @unique
+  subtitle String?
+  summary  String?
+  body     String?
+  status   PublishStatus @default(PUBLISHED)
+  featured Boolean       @default(false)
 
-model Order {
-  id              String      @id @default(cuid())
-  email           String
-  items           Product[]   @relation("OrderItems")
-  total           Float
-  status          OrderStatus
-  stripeSessionId String?     @unique
-  createdAt       DateTime    @default(now())
-}
+  // Featured media (optional)
+  heroId Int?        @unique
+  hero   MediaAsset? @relation("HeroMedia", fields: [heroId], references: [id])
 
-model Image {
-  id        Int      @id @default(autoincrement())
-  url       String
-  productId Int
-  product   Product  @relation(fields: [productId], references: [id])
+  // Editorial metadata
+  season              String?
+  year                Int?
+  materials           String?
+  sustainabilityNotes String?
+
+  // Relations
+  media      MediaAsset[]     @relation("PieceMedia")
+  tags       PieceTag[]
+  techniques PieceTechnique[]
+  fragments  Fragment[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  order     Int      @default(0)
+  sortOrder Int      @default(0)
 }
 
-// model for upcycle enquiries
+model MediaAsset {
+  id      Int    @id @default(autoincrement())
+  // Backref to Piece for gallery images
+  pieceId Int?
+  piece   Piece? @relation("PieceMedia", fields: [pieceId], references: [id], onDelete: SetNull)
+
+  // Backref for hero
+  heroOf Piece? @relation("HeroMedia")
+
+  type    MediaType @default(IMAGE)
+  url     String
+  width   Int?
+  height  Int?
+  alt     String?
+  caption String?
+  order   Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Tags (e.g., denim, outerwear, upcycled)
+model Tag {
+  id     Int        @id @default(autoincrement())
+  name   String     @unique
+  slug   String     @unique
+  pieces PieceTag[]
+}
+
+// Techniques (e.g., CLO3D, Projector cutting, Patchwork)
+model Technique {
+  id     Int              @id @default(autoincrement())
+  name   String           @unique
+  slug   String           @unique
+  pieces PieceTechnique[]
+}
+
+model PieceTag {
+  pieceId Int
+  tagId   Int
+  piece   Piece @relation(fields: [pieceId], references: [id], onDelete: Cascade)
+  tag     Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([pieceId, tagId])
+}
+
+model PieceTechnique {
+  pieceId     Int
+  techniqueId Int
+  piece       Piece     @relation(fields: [pieceId], references: [id], onDelete: Cascade)
+  technique   Technique @relation(fields: [techniqueId], references: [id], onDelete: Cascade)
+
+  @@id([pieceId, techniqueId])
+}
+
+// Process timeline entries (“Fragments”)
+model Fragment {
+  id        Int      @id @default(autoincrement())
+  pieceId   Int?
+  piece     Piece?   @relation(fields: [pieceId], references: [id], onDelete: SetNull)
+  title     String
+  note      String?
+  mediaUrl  String?
+  tag       String?
+  createdAt DateTime @default(now())
+  order     Int      @default(0)
+
+  @@index([pieceId, order])
+}
+
+// Keep these — still valuable without a shop
 model UpcycleEnquiry {
   id        Int      @id @default(autoincrement())
   name      String
@@ -71,7 +131,6 @@ model UpcycleEnquiry {
   updatedAt DateTime @updatedAt
 }
 
-// model for newsletter subscriptions
 model NewsletterSubscription {
   id        Int      @id @default(autoincrement())
   email     String   @unique

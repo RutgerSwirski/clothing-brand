@@ -14,10 +14,9 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 const navbarLinks = [
-  { label: "Products", href: "/products" },
+  { label: "Lookbook", href: "/lookbook" },
   { label: "Upcycle", href: "/upcycle" },
   { label: "Fragments", href: "/fragments" },
-  { label: "Lookbook", href: "/lookbook" },
 ];
 
 const Navbar = () => {
